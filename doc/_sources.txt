@@ -1,32 +1,44 @@
-http://s.campbellsci.com/documents/us/manuals/109ss.pdf    CSI 109SS Manual.pdf
-http://s.campbellsci.com/documents/us/manuals/cr3000.pdf    CSI CR3000 Manual.pdf
-http://s.campbellsci.com/documents/us/manuals/cs616.pdf    CSI CS616 Manual.pdf
-http://s.campbellsci.com/documents/us/manuals/csat3.pdf    CSI CSAT3A Manual.pdf
-http://s.campbellsci.com/documents/us/manuals/ec150.pdf    CSI EC150 EC100 Manual.pdf
-http://s.campbellsci.com/documents/us/manuals/enclosures.pdf    CSI Enclosure Manual.pdf
-http://s.campbellsci.com/documents/us/manuals/gps16x-hvs.pdf    CSI Garmin GPS16X-HVS Manual.pdf
-http://s.campbellsci.com/documents/us/manuals/hmp155a.pdf    CSI HMP155A Manual.pdf
-http://s.campbellsci.com/documents/us/manuals/hfp01.pdf    CSI Hukseflux HFP01 Manual.pdf
-http://s.campbellsci.com/documents/us/manuals/hfp01sc.pdf    CSI Hukseflux HFP01SC Manual.pdf
-http://s.campbellsci.com/documents/us/manuals/li190sb.pdf    CSI LICOR LI190SB Manual.pdf
-http://s.campbellsci.com/documents/us/manuals/loggernet.pdf    CSI LoggerNet Manual.pdf
-http://s.campbellsci.com/documents/us/manuals/034b.pdf    CSI MetOne 034B Manual.pdf
-http://s.campbellsci.com/documents/us/manuals/sunsaver.pdf    CSI MorningStar SunSaver10 Manual.pdf
-http://s.campbellsci.com/documents/us/manuals/nl115.pdf    CSI NL115 Manual.pdf
-http://s.campbellsci.com/documents/us/manuals/nr-lite2.pdf    CSI Kipp&Zonen NR-Lite2 Manual.pdf
-http://s.campbellsci.com/documents/us/manuals/ravenxtv.pdf    CSI Sierra Wireless RavenXT Manual.pdf
-http://s.campbellsci.com/documents/us/manuals/sc105.pdf    CSI SC105 Manual.pdf
-http://s.campbellsci.com/documents/us/manuals/sp70.pdf    CSI SP70 Manual.pdf
-http://s.campbellsci.com/documents/us/manuals/te525.pdf    CSI TE525 Manual.pdf
-http://s.campbellsci.com/documents/us/manuals/ut10.pdf    CSI UT10 Manual.pdf
-http://s.campbellsci.com/documents/us/manuals/hmp155a.pdf    CSI Vaisala HMP155A Manual.pdf
-http://manuals.decagon.com/Integration%20Guides/5TM%20Integrators%20Guide.pdf    Decagon 5TM Integrators Guide.pdf
-http://manuals.decagon.com/Manuals/13441_5TM_Web.pdf    Decagon 5TM Manual.pdf
+# daq/hardware/power/comm
+http://s.campbellsci.com/documents/us/manuals/cr3000.pdf    CSI CR3000 Operator's Manual.pdf
+http://s.campbellsci.com/documents/us/manuals/nl115.pdf    CSI NL115 Instruction Manual.pdf
+http://s.campbellsci.com/documents/us/manuals/ut10.pdf    CSI UT10 Instruction Manual.pdf
+http://s.campbellsci.com/documents/us/manuals/enclosures.pdf    CSI Enclosure Instruction Manual.pdf
+http://s.campbellsci.com/documents/us/manuals/sunsaver.pdf    MorningStar SunSaver10 Instruction Manual.pdf
+http://s.campbellsci.com/documents/us/manuals/sp70.pdf    CSI SP70 Instruction Manual.pdf
+http://s.campbellsci.com/documents/us/manuals/gps16x-hvs.pdf    CSI GPS16X-HVS Instruction Manual.pdf
+http://static.garmincdn.com/pumac/GPS_16x_tech_specs.pdf    Garmin GPS16x Technical Specifications.pdf
+http://s.campbellsci.com/documents/us/manuals/sc105.pdf    CSI SC105 Instruction Manual.pdf
+http://s.campbellsci.com/documents/us/manuals/ravenxtv.pdf    CSI Sierra Wireless RavenXT Instruction Manual.pdf
+http://web.archive.org/web/20170407210010/https://www.sierrawireless.com/~/media/support_downloads/airlink/docs/user_guides/rvn_pp_x_userguides/raven_x_evdo_userguide.ashx    Sierra Wireless Raven X User Guide.pdf
+http://web.archive.org/web/20170407210536/https://source.sierrawireless.com/~/media/support_downloads/airlink/docs/user_guides/rvn_pp_x_userguides/raven_xt_gprs_userguide.ashx?la=en    Sierra Wireless Raven XT User Guide.pdf
+
+# instruments
+http://s.campbellsci.com/documents/us/manuals/ec150.pdf    CSI EC150 EC100 Instruction Manual.pdf
+http://s.campbellsci.com/documents/us/manuals/csat3.pdf    CSI CSAT3A Instruction Manual.pdf
+http://s.campbellsci.com/documents/us/manuals/034b.pdf    CSI 034B Instruction Manual.pdf
+http://s.campbellsci.com/documents/us/manuals/hmp155a.pdf    CSI HMP155A Instruction Manual.pdf
+http://s.campbellsci.com/documents/us/manuals/nr-lite2.pdf    CSI NR-Lite2 Instruction Manual.pdf
+http://s.campbellsci.com/documents/us/manuals/li190sb.pdf    CSI LI190SB Instruction Manual.pdf
+https://s.campbellsci.com/documents/us/manuals/li190r.pdf    CSI LI190R Instruction Manual.pdf
+https://www.licor.com/documents/8yfdtw1rs27w93vemwp6    LICOR Terrestrial Quantum Sensors.pdf
+http://s.campbellsci.com/documents/us/manuals/te525.pdf    CSI TE525 Instruction Manual.pdf
+http://s.campbellsci.com/documents/us/manuals/hfp01.pdf    CSI HFP01 Instruction Manual.pdf
+http://s.campbellsci.com/documents/us/manuals/hfp01sc.pdf    CSI HFP01SC Instruction Manual.pdf
+http://www.hukseflux.com/sites/default/files/product_manual/HFP01_HFP03_manual_v1620.pdf    Hukseflux HFP01 & HFP03 User Manual.pdf
+http://s.campbellsci.com/documents/us/manuals/tcav.pdf    CSI TCAV Instruction Manual.pdf
+http://manuals.decagon.com/Manuals/14597_SRS_Web.pdf    Decagon SRS Sensors Operator's Manual.pdf
+http://manuals.decagon.com/Integration%20Guides/SRS-N%20Integrators%20Guide.pdf    Decagon SRS-NDVI Integrator Guide.pdf
+http://manuals.decagon.com/Integration%20Guides/SRS-P%20Integrators%20Guide.pdf    Decagon SRS-PRI Integrator Guide.pdf
 http://www.decagon.com/assets/Uploads/SRS-pair-example-program.CR1.zip    Decagon SRS Example CR1K Program.zip
-http://manuals.decagon.com/Manuals/14597_SRS_Web.pdf    Decagon SRS Sensors Manual.pdf
-http://manuals.decagon.com/Integration%20Guides/SRS-N%20Integrators%20Guide.pdf    Decagon SRS-NDVI Integrators Guide.pdf
-http://manuals.decagon.com/Integration%20Guides/SRS-P%20Integrators%20Guide.pdf    Decagon SRS-PRI Integrators Guide.pdf
-http://static.garmincdn.com/pumac/GPS_16x_tech_specs.pdf    Garmin GPS16x tech specs.pdf
-https://dl.boxcloud.com/d/1/dGyDg84ynFgwGVxEeguRngz7xF5Zla-8WHTKXkba68dqkbP_BwksVgZCbtLI72-NfXO7MuaQMUQWobsED51um0Z9IJn-K__-eC8kVGjfMvYysf7we7tB0y-wwIqj0PpkPJB3u5iYrMpz0_3pFgLelXDfPXAJoCgz590aECX4ojbxbD8c2BbLkTbnNzenoaraGw1TNgJh0we0ZC1ZwZaU_M2fNZyD8Fjner3d9-n45yCMcLIMZMpb7-JGYfeQYlTTWLVG5s5E1hsDlbS0NRFwbsMHuJGwVZxgr_VLmmCj-LxmDiY3cb3XW8UpHcbeqdIjyFFF1CeYBvsWQGIq8SSy5Dr0cLkok77SDKMz8kuROaoCWCsBOBJN90R30tZmdKwZW3595ByqBT2FPgABfyGGJlKt8I8SET1BffRAolGY662At1EPipvKBtAxjCw2YU8QRMQprgsIQfKhbzc4iUgQK5gmuF0_MGfMKMyFQZo8P3sC3wYdC9ffrUYxfT_4UUocjIFG2lzgep3edHaFbWH6ayhEeujisKfELgBiWkfBD7Pms5qmMNrE7wFxLCPIRYZvAzqYs68gvZoXqu2y654DJcaVDMrGiY-kHxgjRfmBfOA6fyadaQVIx83R8p_awSvLPUxCZ_27AZ0zUVCWw-TTxRFtUWX5RfwiGJ2c8_MlsuxXpQRNdIKR7DTklRW_4BfCct_wDKbAujAPEI6kvBqXtNIJaLSghgTbWH5brh3JNGWvcJvu4VDQxSGxHzqIdI0L49YcKEfxQmLGcIfWLgsmxY-sK8uUi7QQ4ljYLZ_AGx8grwsdN2BaHdFdDWNfVhx7jsjAthiMMOdGB63Qy6705hozinXTd1REaWoSXAcOsizdDMQzgl7pp6JYlqVa4n2d33wwxZw4_9NQGT4t5EKmFBWNeGKQINDDTmbGK8_LxYcXVFPF2SoODTmSzCpHxoHLgYQ9i3uZahEoB-F27FcXoVRmc4Jxgd6zgZJUkh08TERwTKdm8uD054IL0nT-eAqIQ0wJ-nE-MptFMs89WviY7dMUdYlR6DKMNph4VHbM2BwZZ-W4HCxJXu6bOJdkqrYNUEpwlH-_TtuyzYliWFRJz5hEc0W7PvdeJVbmWjW8JocuxJjQuRK6oImAQ4554eiWhqG6ooSEaubHl8t0tDLiq7JzyWfLJRPAKcoFhtn7FklVsicq7n4iD3BtMUxtCczhXoTn4W5DIUIyDz7k9tWZCL3Oy3I-Bfzz6SN0Ra9eYPUMdaCbGOSUuaKRPPf5ZE3m2kPsPBCCbQW-58p7wtR020Q5kC5I1z2_ZFte2YhnaSrG/download    LICOR Terrestrial Quantum Sensors.pdf
+http://www.acclima.com/poc7/prodlit/TDR-315%20User%20Manual.pdf    Acclima TDR-315 User Manual.pdf
+
+ # software
+http://s.campbellsci.com/documents/us/manuals/loggernet.pdf    CSI LoggerNet Instruction Manual.pdf
+http://web.archive.org/web/20170407210818/https://www.sierrawireless.com/~/media/support_downloads/airlink/docs/user_guides/4.0.11/4112515_aleos%204.0.11%20configuration%20user%20guide_r7.ashx    Sierra Wireless ALEOS 4.0.11 User Guide.pdf
+
+# guidance
+https://www.licor.com/documents/3vmte7rs3d5zu6swhbum    LICOR LI-190 Quantum Sensor Calculation of Multiplier from Campbell Scientific Purchased Sensors.pdf
+https://www.licor.com/documents/3xc19obvbdjezj7ahhgl    LICOR Using LI-COR's Millivolt Adapters for Interfacing LI-COR Radiation Sensors to Voltage-reading Dataloggers.pdf
+https://www.licor.com/documents/liuswfuvtqn7e9loxaut    LICOR Principles of Radiation Measurement.pdf
 http://public.hortus.net.au/Portals/0/Page%20Content/H2Pro/Hortus%20Soil%20moisture%20probe%20installation%20instructions.pdf    Hortus Soil moisture probe installation instructions.pdf
 http://mea.com.au/upload/NEW/PRODUCT_Brochures/B83_Soil-Moisture_Sensor_Installation_Guide_Web.pdf    MEA Soil Moisture Sensor Installation Guide.pdf
