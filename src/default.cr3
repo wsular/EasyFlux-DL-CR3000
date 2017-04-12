@@ -89,7 +89,12 @@ AngleDegrees  'Angles are in degrees throughout the program
 Const SENSOR_IRGASON     = TRUE                   'Unique: IRGASON, if TRUE, SENSOR_CSAT3AEC150 must be set to FALSE
 Const SENSOR_CSAT3AEC150 = FALSE                  'Unique: CSAT3A + EC150, if TRUE, SENSOR_IRGASON must be set to FALSE.
 Const SENSOR_FW          = FALSE                  'Unique: FW05, FW1, FW3, or other fine wire thermocouple
-Const SENSOR_TMPR_RH     = FALSE                   'Unique: HC2S3 or HMP155A: temperature and relative humidity probe
+
+'Select at most 1 temperature/RH probe:
+Const SENSOR_HMP155A     = TRUE                   'Unique: Vaisala HMP155A
+Const SENSOR_HC2S3       = FALSE                  'Unique: Campbellsci HC2S3
+Const SENSOR_HMP45C      = FALSE                  'Unique: Vaisala HMP45C
+
 Const SENSOR_NR_LITE     = FALSE                  'Unique: NR Lite2: net radiometer, if true, SENSOR_NR01 and SENSOR_CNR4 must be set to FALSE
 Const SENSOR_CS300       = FALSE                  'Unique: CS300: pyranometer, if true, SENSOR_NR01 and SENSOR_CNR4 must be set to FALSE
 Const SENSOR_LI200X      = FALSE                  'Unique: LI200X: pyranometer, if true, SENSOR_NR01 and SENSOR_CNR4 must be set to FALSE
@@ -111,6 +116,7 @@ Const SENSOR_HFP01       = FALSE                  'Unique: HFP01: soil heat flux
 Const SENSOR_HFP01SC     = FALSE                   'Unique: HFP01SC: self-calibrated soil heat flux plates, if true, SENSOR_HFP01 must be set to FALSE
 
 'Composite boolean variables for variables above
+Const SENSOR_TMPR_RH     = ((SENSOR_HMP155A) OR (SENSOR_HC2S3) OR (SENSOR_HMP45C))
 Const SENSOR_Rn          = ((SENSOR_CNR4) OR (SENSOR_NR01) OR (SENSOR_NR_LITE))
 Const SENSOR_TE525x      = ((SENSOR_TE525) OR (SENSOR_TE525WS) OR (SENSOR_TE525MM) OR (SENSOR_TE525_wf))
 Const SENSOR_HFP         = ((SENSOR_HFP01) OR (SENSOR_HFP01SC))
@@ -426,8 +432,17 @@ Const CS65X_SDI12_Address_2 = 2        'Unique: SDI address for CS655 #2
 #If (SENSOR_TMPR_RH) Then
 
 Const TMPR_RH_ANALOG_INPUT = 27     'Single-end analog input channel for temperature and humidity probe.
-Const TMPR_RH_T_MULT       = 0.14   'Unique: multiplier for temperature; HC2S3 = 0.1, HMP155A = 0.14, or HMP45C = 0.1.
-Const TMPR_RH_T_OFFSET     = -80    'Unique: offset for temperature; HC2S3 = -40, HMP155A = -80, or HMP45C = -40.
+Const TMPR_RH_MULT = (100-0)/1000   'Unique: RH multiplier, all models = 0.1
+Const TMPR_RH_OFFSET = 0            'Unique: RH offset, all models = 0
+
+#If (SENSOR_HMP155A) Then
+Const TMPR_RH_T_MULT   = (60 - -80)/1000  'Unique: temperature multiplier HMP155A = 0.14
+Const TMPR_RH_T_OFFSET = -80              'Unique: temperature offset HC2S3 = -40, HMP155A = -80, or HMP45C = -40.
+#EndIf
+#If (SENSOR_HC2S3 OR SENSOR_HMP45C) Then
+Const TMPR_RH_T_MULT   = (60 - -40)/1000  'Unique: temperature multiplier HC2S3 = 0.1
+Const TMPR_RH_T_OFFSET = -40              'Unique: temperature offset HC2S3 = -40
+#EndIf
 
 '*** Beginning of HC2S3 or HMP wiring ***
 '14H     Temperature signal (brown/yellow)
@@ -4909,7 +4924,7 @@ BeginProg
     '*** Beginning of temperature and humidity probe measurements ***
     VoltSe (T_probe, 2, mV1000, TMPR_RH_ANALOG_INPUT, TRUE, 0, ANALOG_INTEGRATION, 1, 0)
     T_probe  = T_probe*TMPR_RH_T_MULT + TMPR_RH_T_OFFSET
-    RH_probe = RH_probe*0.1
+    RH_probe = RH_probe*TMPR_RH_MULT + TMPR_RH_OFFSET
     VaporPressure (e_probe, T_probe, RH_probe)
 
     'Saturation water pressure at current temperature
