@@ -51,6 +51,11 @@ Next release
   instead of slow-response thermistor temperature; for more information, refer
   to http://dx.doi.org/10.1016/j.agrformet.2016.07.018
 
+### Changes w.r.t EasyFlux v1.0
+
+* Incorporate updates from EasyFlux v1.1 release
+    * FIX: correct transposed values in constant used for dewpoint calculations
+    * Non-substantive formatting changes
 
 
 

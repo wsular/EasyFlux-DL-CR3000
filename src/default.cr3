@@ -589,7 +589,6 @@ Dim slowsequence_disable_flg  As Boolean     'Flag used to decimate statistics i
 Dim sys_conf_var_file         As Long        'Filehandle for the file that contains the system configuration variables in the CPU.
 
 Dim i, i_slow                 As Long        'Index variables for the outmost loop. "i" in main scan and "i_slow" in slow scan sequence
-Dim ii, ii_slow               As Long        'Index variables inside outmost loop. "ii" in main scan and "ii_slow" in slow scan sequence
 Dim array_index               As Long        'Used for array index that must be calculated using loop index (to simplify expression and reduce computation for array index)
 
 Dim n = 1                                    'Used for counting the number of samples
@@ -2027,10 +2026,10 @@ DataTable (Flux, TRUE, FLUX_SIZE_CPU)
   #EndIf
   #If (SENSOR_SI111) Then
 
-  '*** Beginning of LI190SB output data ***
+  '*** Beginning of SI111 output data ***
   Average  (1, T_SI111_targeted, IEEE4, slowsequence_disable_flg)
   Average  (1, T_SI111_body,     IEEE4, slowsequence_disable_flg)
-  '*** End of LI190SB output data ***
+  '*** End of SI111 output data ***
   #EndIf
   #If (SENSOR_TCAV) Then
 
@@ -2506,8 +2505,8 @@ Sub  Displacement_roughness_heights (S_type, d_user, z0_user, h_canopy, h_measur
       displacement = 0                                  'Default w/o canopy
       roughness    = 0.01                               'Default w/o canopy
     Case Is >0
-      displacement = 10^(0.979*LOG10(h_canopy)-0.154)   'Crop or grass canopy, Eq. 4.5, page 138 in Rosenberg et al. (1983)
-      roughness    = 10^(0.977*LOG10(h_canopy)-0.883)   'Crop or grass canopy, Eq. 4.4, page 137 in Rosenberg et al. (1983)
+      displacement = 10.0^(0.979*LOG10(h_canopy)-0.154)   'Crop or grass canopy, Eq. 4.5, page 138 in Rosenberg et al. (1983)
+      roughness    = 10.0^(0.977*LOG10(h_canopy)-0.883)   'Crop or grass canopy, Eq. 4.4, page 137 in Rosenberg et al. (1983)
     EndSelect
 
   EndIf
@@ -4443,7 +4442,7 @@ BeginProg
 
       Select Case Td_gu                                                                           'Eq. 11 from Appendix A of flux program manual
       Case Is >= 0
-        Td = 238.88*x_tmp/(17.386 - x_tmp)
+        Td = 238.88*x_tmp/(17.368 - x_tmp)
       Case Is < 0
         Td = 247.15*x_tmp/(17.966 - x_tmp)
       EndSelect
@@ -4920,7 +4919,7 @@ BeginProg
 
     Select Case Td_gu_probe                                                                                  'Eq. 11 from Appendix A of flux program manual
     Case Is >= 0
-      Td_probe = 238.88*x_tmp_probe/(17.386 - x_tmp_probe)
+      Td_probe = 238.88*x_tmp_probe/(17.368 - x_tmp_probe)
     Case Is < 0
       Td_probe = 247.15*x_tmp_probe/(17.966 - x_tmp_probe)
     EndSelect
