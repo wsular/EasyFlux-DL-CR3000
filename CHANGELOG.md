@@ -6,8 +6,16 @@ Next release
 
 > This release requires operating system `CR3000.Std.31` or newer. 
 
+<p></p>
+
 > Previous telemetry integrations (email, ScadaBR) have been removed in this
 > version.
+
+<p></p>
+
+> The data processing core is now built upon [EasyFlux-DL by Campbell 
+> Scientific](www.campbellsci.com/easyflux-dl). This represents a substantial 
+> improvement in near real-time evaluation of carbon and energy fluxes.
 
 ### Data Table Changes
 
