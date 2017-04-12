@@ -56,6 +56,10 @@ Next release
 * Incorporate updates from EasyFlux v1.1 release
     * FIX: correct transposed values in constant used for dewpoint calculations
     * Non-substantive formatting changes
+* Increased instrumentation support
+    * Additional rain gage models (TE525, TE525WS, TE525 or TE525MM used with
+      8" funnel adapter)
+
 
 
 

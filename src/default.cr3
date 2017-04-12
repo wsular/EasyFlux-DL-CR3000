@@ -97,7 +97,13 @@ Const SENSOR_LI190SB     = FALSE                  'Unique: LI190SB: Quantum, if 
 Const SENSOR_SI111       = FALSE                  'Unique: SI111: Infrared radiometer, if true, SENSOR_NR01 and SENSOR_CNR4 must be set to FALSE
 Const SENSOR_NR01        = FALSE                   'Unique: NR01: 4-way net radiometer, if true, SENSOR_NR_LITE and SENSOR_CNR4 must be set to FALSE
 Const SENSOR_CNR4        = FALSE                  'Unique: CNR4: 4-way net radiometer, if true, SENSOR_NR_LITE and SENSOR_NR01 must be set to FALSE
-Const SENSOR_TE525mm     = FALSE                   'Unique: TE525mm rain gauge
+
+'Select at most 1 rain sensor:
+Const SENSOR_TE525       = FALSE    'Unique: TE525 (6") rain gage
+Const SENSOR_TE525WS     = TRUE     'Unique: TE525WS (8") rain gage
+Const SENSOR_TE525MM     = FALSE    'Unique: TE525MM (metric) rain gage
+Const SENSOR_TE525_wf    = FALSE    'Unique: TE525 or TE525MM rain gage with 8in funnel
+
 Const SENSOR_TCAV        = FALSE                   'Unique: TCAV: type E thermocouple averaging soil temperature probes
 Const SENSOR_CS616       = FALSE                   'Unique: CS616: water content reflectometers for volumetric soil moisture, if true, SENSOR_CS65X must be set to FALSE
 Const SENSOR_CS65X       = FALSE                  'Unique: CS650 or CS655: water content reflectometers for volumetric soil moisture, if true, SENSOR_CS616 must be set to FALSE
@@ -106,6 +112,7 @@ Const SENSOR_HFP01SC     = FALSE                   'Unique: HFP01SC: self-calibr
 
 'Composite boolean variables for variables above
 Const SENSOR_Rn          = ((SENSOR_CNR4) OR (SENSOR_NR01) OR (SENSOR_NR_LITE))
+Const SENSOR_TE525x      = ((SENSOR_TE525) OR (SENSOR_TE525WS) OR (SENSOR_TE525MM) OR (SENSOR_TE525_wf))
 Const SENSOR_HFP         = ((SENSOR_HFP01) OR (SENSOR_HFP01SC))
 Const SENSOR_CS6XX       = ((SENSOR_CS616) OR (SENSOR_CS65X))
 
@@ -434,12 +441,21 @@ Const TMPR_RH_T_OFFSET     = -80    'Unique: offset for temperature; HC2S3 = -40
 'G       Power reference (gray/black)
 '*** End of HC2S3 or HMP wiring ***
 #EndIf
-#If (SENSOR_TE525mm) Then
+#If (SENSOR_TE525x) Then
 
 Const TE525_PULSE_INPUT = 1          'Pulse input channel rain gauge.
-Const TE525_MULT        = 0.1        'Unique: multiplier for TE525MM
 
-'*** Beginning of TE525mm wiring ***
+#If (SENSOR_TE525MM) Then
+Const TE525_MULT = 0.1        'Unique: multiplier for TE525MM
+#EndIf
+#If (SENSOR_TE525 OR SENSOR_TE525WS) Then
+Const TE525_MULT = 0.254      'Unique: multiplier for TE525 & TE525WS
+#EndIf
+#If (SENSOR_TE525_wf) Then
+Const TE525_MULT = 0.1459     'Unique: multipler for TE525 or TE525MM w/ 8in funnel
+#EndIf
+
+'*** Beginning of TE525x wiring ***
 'P1      Precipitation (black)
 'gnd     Signal reference (white)
 'gnd     Shield (clear/clear)
@@ -1574,7 +1590,7 @@ DataTable (stats_tmpr_rh,TRUE,1)
 EndTable
 '*** End of temperature and humidity probe constants, variables, and working data table ***
 #EndIf
-#If (SENSOR_TE525mm) Then
+#If (SENSOR_TE525x) Then
 
 '*** Beginning of TE525mm constants and variables ***
 Public Precipitation
@@ -1995,7 +2011,7 @@ DataTable (Flux, TRUE, FLUX_SIZE_CPU)
   Sample  (1, rho_d_probe_Avg, IEEE4)                                           'Measured from temperaure and humidity probe: dry air density in kg/m^3
   '*** End of temperature and humidity probe output data ***
   #EndIf
-  #If (SENSOR_TE525mm) Then
+  #If (SENSOR_TE525x) Then
 
   '*** Beginning of rain gauge output data ***
   Totalize (1, Precipitation, FP2, 0)
@@ -4050,7 +4066,7 @@ BeginProg
     'Datalogger panel temperature
     PanelTemp (panel_tmpr, 250)
 
-    #If (SENSOR_TE525mm) Then 'This is placed at beginning of scan because PulseCount() is not allowed in any conditional statements.
+    #If (SENSOR_TE525x) Then 'This is placed at beginning of scan because PulseCount() is not allowed in any conditional statements.
     '*** Beginning of Precipitation measurements ***
     PulseCount (Precipitation, 1, TE525_PULSE_INPUT, 2, 0, TE525_MULT, 0)
     '*** End of Precipitation measurements ***
