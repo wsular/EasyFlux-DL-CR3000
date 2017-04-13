@@ -60,6 +60,7 @@ Next release
     * Additional rain gage models (TE525, TE525WS, TE525 or TE525MM used with
       8" funnel adapter)
     * Additional temperature/humidity probes (HC2S3, HMP45C)
+    * Cup & vane wind set (MetOne 034B)
 
 
 

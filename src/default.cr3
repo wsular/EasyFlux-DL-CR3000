@@ -115,6 +115,8 @@ Const SENSOR_CS65X       = FALSE                  'Unique: CS650 or CS655: water
 Const SENSOR_HFP01       = FALSE                  'Unique: HFP01: soil heat flux plates, if true, SENSOR_HFP01SC must be set to FALSE
 Const SENSOR_HFP01SC     = FALSE                   'Unique: HFP01SC: self-calibrated soil heat flux plates, if true, SENSOR_HFP01 must be set to FALSE
 
+Const SENSOR_034B        = TRUE      'Unique: MetOne 034B cup & vane wind set
+
 'Composite boolean variables for variables above
 Const SENSOR_TMPR_RH     = ((SENSOR_HMP155A) OR (SENSOR_HC2S3) OR (SENSOR_HMP45C))
 Const SENSOR_Rn          = ((SENSOR_CNR4) OR (SENSOR_NR01) OR (SENSOR_NR_LITE))
@@ -475,6 +477,29 @@ Const TE525_MULT = 0.1459     'Unique: multipler for TE525 or TE525MM w/ 8in fun
 'gnd     Signal reference (white)
 'gnd     Shield (clear/clear)
 '*** End of TE525mm wiring ***
+#EndIf
+#If (SENSOR_034B) Then
+
+Const o34B_WD_ANALOG_INPUT = 1  'Single-ended analog input channel for 034B wind direction
+Const o34B_WD_EXCITATION = 1    'Voltage excitation channel for 034B wind direction
+Const o34B_WS_PULSE_INPUT = 2   'Pulse input channel for 034B wind speed
+
+Const o34B_WD_MULT = 720        'Unique: multipler for wind direction
+Const o34B_WD_OFFSET = 0        'Unique: offset for wind direction
+Const o34B_WS_MULT = 0.7989     'Unique: multiplier for wind speed
+Const o34B_WS_OFFSET = 0.28     'Unique: offset for wind speed
+
+'lower case'd in anticipation of future integration into settings array
+Const cupvane_azimuth = 0  'Unique: orientation of windset w.r.t. true north
+
+'*** Beginning of 034B wiring ***
+'1L      Wind direction signal (green)
+'VX1     Wind direction voltage excitation (blue)
+'gnd     Wind diretion reference (white)
+'P1      Wind speed pulsed input (red)
+'gnd     Wind speed reference (black)
+'gnd     Shield (clear)
+'*** End of 034B wiring ***
 #EndIf
 
 'POWER IN
@@ -1820,6 +1845,32 @@ Units  T_SI111_body     = C
 Dim m_SI111, b_SI111         'Multipler and offset in equation to calculate temperature of targeted surface using measured voltage and SI111 body temperature
 '*** End of infrared radiometer constants and variables ***
 #EndIf
+#If (SENSOR_034B) Then
+
+'*** Beginning of cup and vane wind set constants, variables and working data table ***
+Public cupvane_WS
+Public cupvane_WD
+Units cupvane_WS = m/s
+Units cupvane_WD = degrees
+
+Dim stats_out_cupvane(4)
+Alias stats_out_cupvane(1) = cupvane_WS_Avg
+Alias stats_out_cupvane(2) = cupvane_WS_rslt_Avg
+Alias stats_out_cupvane(3) = cupvane_WD_rslt_Avg
+Alias stats_out_cupvane(4) = cupvane_WD_csi_Std
+Units cupvane_WS_Avg = m/s
+Units cupvane_WS_rslt_Avg = m/s
+Units cupvane_WD_rslt_Avg = degrees
+Units cupvane_WD_csi_Std = degrees
+
+DataTable(stats_cupvane,TRUE,1)
+  TableHide
+  DataInterval (0,OUTPUT_INTERVAL,Min,1)
+
+  WindVector(1,cupvane_WS,cupvane_WD,FP2,(cupvane_WS=NAN OR cupvane_WD=NAN),0,0,2)
+EndTable
+'*** End of cup and vane wind set constants, variables and working data table ***
+#EndIf
 
 '*** Beginning display menu ***
 DisplayMenu ("System Control", TRUE)
@@ -1848,6 +1899,10 @@ DisplayMenu ("System Control", TRUE)
     #EndIf
 
     MenuItem ("Sonic Azmth", sonic_azimuth)
+'needs integration into settings array before reveal
+'    #If (SENSOR_034B) Then
+'    MenuItem ("Windset Azmth", cupvane_azimuth)
+'    #EndIf
     MenuItem ("Latitude",    latitude)
     MenuItem ("Hemisph_Eq",  hemisphere_NS)
   MenuPick (Hemisphere_North, Hemisphere_South)
@@ -2061,6 +2116,12 @@ DataTable (Flux, TRUE, FLUX_SIZE_CPU)
   Average  (1, T_SI111_targeted, IEEE4, slowsequence_disable_flg)
   Average  (1, T_SI111_body,     IEEE4, slowsequence_disable_flg)
   '*** End of SI111 output data ***
+  #EndIf
+  #If (SENSOR_034B) Then
+  
+  '*** Beginning of 034B output data ***
+  Sample (4, stats_out_cupvane(1), FP2)
+  '*** End of 034B output data ***
   #EndIf
   #If (SENSOR_TCAV) Then
 
@@ -4087,6 +4148,17 @@ BeginProg
     '*** End of Precipitation measurements ***
     #EndIf
 
+    #If (SENSOR_034B) Then 'likewise, placed right here because PulseCount()
+    '*** Beginning of cup and vane measurements ***
+    BrHalf(cupvane_WD,1,mv5000,o34B_WD_ANALOG_INPUT,o34B_WD_EXCITATION,1,5000,True,0,250,o34B_WD_MULT,o34B_WD_OFFSET)
+    If ((cupvane_WD >= 360) OR (cupvane_WD < 0)) Then (cupvane_WD = 0)
+    PulseCount (cupvane_WS,1,o34B_WS_PULSE_INPUT,2,1,o34B_WS_MULT,o34B_WS_OFFSET)
+    If (cupvane_WS <= o34B_WS_OFFSET) Then (cupvane_WS = 0)
+    
+    CallTable stats_cupvane
+    '*** End of cup and vane measurements ***
+    #EndIf
+
     #If (SENSOR_FW) Then
     '*** Beginning of FW measurements ***
     diag_FW_raw = 0
@@ -4838,7 +4910,16 @@ BeginProg
 
       EndIf
       #EndIf
+      #If (SENSOR_034B) Then
+      
+      '*** Beginning of cup and vane processing ***
+      If (stats_cupvane.Output(1,1)) Then
+        GetRecord (stats_out_cupvane(1), stats_cupvane, 1)
+        cupvane_WD_rslt_Avg = cupvane_WD_rslt_Avg + cupvane_azimuth
+      EndIf
+      '*** End of cup and vane processing ***
 
+      #EndIf
       #If (SENSOR_HFP) Then
 
       '*** Beginning of table for soil heat flux plate ***
