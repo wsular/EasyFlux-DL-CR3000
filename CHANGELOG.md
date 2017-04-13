@@ -61,6 +61,7 @@ Next release
       8" funnel adapter)
     * Additional temperature/humidity probes (HC2S3, HMP45C)
     * Cup & vane wind set (MetOne 034B)
+    * GPS receiver (GPS16X-HVS)
 
 
 

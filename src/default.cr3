@@ -116,6 +116,8 @@ Const SENSOR_HFP01       = FALSE                  'Unique: HFP01: soil heat flux
 Const SENSOR_HFP01SC     = FALSE                   'Unique: HFP01SC: self-calibrated soil heat flux plates, if true, SENSOR_HFP01 must be set to FALSE
 
 Const SENSOR_034B        = TRUE      'Unique: MetOne 034B cup & vane wind set
+Const SENSOR_GPS16X      = TRUE      'Unique: Garmin GPS16x-HVS GPS receiver
+
 
 'Composite boolean variables for variables above
 Const SENSOR_TMPR_RH     = ((SENSOR_HMP155A) OR (SENSOR_HC2S3) OR (SENSOR_HMP45C))
@@ -500,6 +502,24 @@ Const cupvane_azimuth = 0  'Unique: orientation of windset w.r.t. true north
 'gnd     Wind speed reference (black)
 'gnd     Shield (clear)
 '*** End of 034B wiring ***
+#EndIf
+#If (SENSOR_GPS16X) Then
+
+Const GPS16X_COM = Com4    'Serial port for GPS16X
+
+Const UTC_OFFSET = -8      'local time offset from UTC, in hours
+Const MAX_CLOCK_DRIFT = 0  'max clock drift permitted before setting clock, in msec
+
+'*** Beginning of GPS16X wiring ***
+'C7      pulse-per-second (PPS) output (gray)
+'C8      serial output/message transmit (white)
+'gnd     serial input/receive data (blue)
+'gnd     shield (clear)
+'
+'12V     power input (red)
+'G       power ground (black)
+'G       power switch (yellow)
+'*** End of GPS16X wiring ***
 #EndIf
 
 'POWER IN
@@ -1870,6 +1890,44 @@ DataTable(stats_cupvane,TRUE,1)
   WindVector(1,cupvane_WS,cupvane_WD,FP2,(cupvane_WS=NAN OR cupvane_WD=NAN),0,0,2)
 EndTable
 '*** End of cup and vane wind set constants, variables and working data table ***
+#EndIf
+#If (SENSOR_GPS16X) Then
+
+'*** Beginning of GPS receiver constants and variables ***
+Dim nmea_sentence(2) As String * 90
+
+Dim gps_data(15)
+Alias gps_data(1) = latitude_deg            'Degrees latitude (+ = East; - = West)
+Alias gps_data(2) = latitude_min            'Decimal minutes latitude
+Alias gps_data(3) = longitude_deg           'Degress longitude (+ = East; - = West)
+Alias gps_data(4) = longitude_min           'Decimal minutes longitude
+Alias gps_data(5) = speed                   'Speed
+Alias gps_data(6) = course                  'Course over ground
+Alias gps_data(7) = magnetic_variation      'Magnetic variation from true north (+ = East; - = West)
+Alias gps_data(8) = fix_quality             'GPS fix quality: 0 = invalid, 1 = GPS, 2 = 'differential GPS, 6 = estimated
+Alias gps_data(9) = nmbr_satellites         'Number of satellites used for fix
+Alias gps_data(10) = altitude               'Antenna altitude
+Alias gps_data(11) = pps                    'Elapsed ms since last pulse per second (PPS) from GPS
+Alias gps_data(12) = dt_since_gprmc         'Time since last GPRMC string, normally less than '1 second
+Alias gps_data(13) = gps_ready              'Counts from 0 to 10, 10 = ready
+Alias gps_data(14) = max_clock_change       'Maximum value the clock was changed
+Alias gps_data(15) = nmbr_clock_change      'Number of times the clock was changed
+Units latitude_deg = degreesN
+Units latitude_min = minutesN
+Units longitude_deg = degreesE
+Units longitude_min = minutesE
+Units speed = m/s
+Units course = degreesEofN
+Units magnetic_variation = degreesEofN
+Units fix_quality = unitless
+Units nmbr_satellites = unitless
+Units altitude = m
+Units pps = ms
+Units dt_since_gprmc = s
+Units gps_ready = unitless
+Units max_clock_change = ms
+Units nmbr_clock_change = occurrences
+'*** End of GPS receiver constants and variables ***
 #EndIf
 
 '*** Beginning display menu ***
@@ -5297,6 +5355,13 @@ BeginProg
     VoltDiff (T_SI111_targeted, 1, mV20, SI111_ANALOG_INPUT, True, 0, ANALOG_INTEGRATION, 1, 0)
     T_SI111_targeted = ((T_SI111_body + T_0C_K)^4 + m_SI111*T_SI111_targeted + b_SI111)^0.25 - T_0C_K       'T_SI111_targeted in C
     '*** End of SI111 measurements ***
+    #EndIf
+
+    #If (SENSOR_GPS16X) Then
+    
+    '*** Beginning of GPS16X-HVS measurements ***
+    GPS (gps_data(1),GPS16X_COM,UTC_OFFSET*3600,MAX_CLOCK_DRIFT,nmea_sentence(1))
+    '*** End of GPS16X-HVS measurements ***
     #EndIf
 
     '*** Beginning of updating files of station variables and planar fit angles ***
