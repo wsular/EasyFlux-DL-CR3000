@@ -86,22 +86,22 @@ PipeLineMode
 AngleDegrees  'Angles are in degrees throughout the program
 
 '*** SENSORS ****
-Const SENSOR_IRGASON     = TRUE                   'Unique: IRGASON, if TRUE, SENSOR_CSAT3AEC150 must be set to FALSE
-Const SENSOR_CSAT3AEC150 = FALSE                  'Unique: CSAT3A + EC150, if TRUE, SENSOR_IRGASON must be set to FALSE.
-Const SENSOR_FW          = FALSE                  'Unique: FW05, FW1, FW3, or other fine wire thermocouple
+Const SENSOR_IRGASON     = FALSE    'Unique: IRGASON, if TRUE, SENSOR_CSAT3AEC150 must be set to FALSE
+Const SENSOR_CSAT3AEC150 = TRUE     'Unique: CSAT3A + EC150, if TRUE, SENSOR_IRGASON must be set to FALSE.
+Const SENSOR_FW          = FALSE    'Unique: FW05, FW1, FW3, or other fine wire thermocouple
 
 'Select at most 1 temperature/RH probe:
-Const SENSOR_HMP155A     = TRUE                   'Unique: Vaisala HMP155A
-Const SENSOR_HC2S3       = FALSE                  'Unique: Campbellsci HC2S3
-Const SENSOR_HMP45C      = FALSE                  'Unique: Vaisala HMP45C
+Const SENSOR_HMP155A     = TRUE     'Unique: Vaisala HMP155A
+Const SENSOR_HC2S3       = FALSE    'Unique: Campbellsci HC2S3
+Const SENSOR_HMP45C      = FALSE    'Unique: Vaisala HMP45C
 
-Const SENSOR_NR_LITE     = FALSE                  'Unique: NR Lite2: net radiometer, if true, SENSOR_NR01 and SENSOR_CNR4 must be set to FALSE
-Const SENSOR_CS300       = FALSE                  'Unique: CS300: pyranometer, if true, SENSOR_NR01 and SENSOR_CNR4 must be set to FALSE
-Const SENSOR_LI200X      = FALSE                  'Unique: LI200X: pyranometer, if true, SENSOR_NR01 and SENSOR_CNR4 must be set to FALSE
-Const SENSOR_LI190SB     = FALSE                  'Unique: LI190SB: Quantum, if true, SENSOR_NR01 and SENSOR_CNR4 must be set to FALSE
-Const SENSOR_SI111       = FALSE                  'Unique: SI111: Infrared radiometer, if true, SENSOR_NR01 and SENSOR_CNR4 must be set to FALSE
-Const SENSOR_NR01        = FALSE                   'Unique: NR01: 4-way net radiometer, if true, SENSOR_NR_LITE and SENSOR_CNR4 must be set to FALSE
-Const SENSOR_CNR4        = FALSE                  'Unique: CNR4: 4-way net radiometer, if true, SENSOR_NR_LITE and SENSOR_NR01 must be set to FALSE
+Const SENSOR_NR_LITE     = TRUE     'Unique: NR Lite2: net radiometer, if true, SENSOR_NR01 and SENSOR_CNR4 must be set to FALSE
+Const SENSOR_CS300       = FALSE    'Unique: CS300: pyranometer, if true, SENSOR_NR01 and SENSOR_CNR4 must be set to FALSE
+Const SENSOR_LI200X      = FALSE    'Unique: LI200X: pyranometer, if true, SENSOR_NR01 and SENSOR_CNR4 must be set to FALSE
+Const SENSOR_LI190SB     = TRUE     'Unique: LI190SB: Quantum, if true, SENSOR_NR01 and SENSOR_CNR4 must be set to FALSE
+Const SENSOR_SI111       = FALSE    'Unique: SI111: Infrared radiometer, if true, SENSOR_NR01 and SENSOR_CNR4 must be set to FALSE
+Const SENSOR_NR01        = FALSE    'Unique: NR01: 4-way net radiometer, if true, SENSOR_NR_LITE and SENSOR_CNR4 must be set to FALSE
+Const SENSOR_CNR4        = FALSE    'Unique: CNR4: 4-way net radiometer, if true, SENSOR_NR_LITE and SENSOR_NR01 must be set to FALSE
 
 'Select at most 1 rain sensor:
 Const SENSOR_TE525       = FALSE    'Unique: TE525 (6") rain gage
@@ -109,15 +109,15 @@ Const SENSOR_TE525WS     = TRUE     'Unique: TE525WS (8") rain gage
 Const SENSOR_TE525MM     = FALSE    'Unique: TE525MM (metric) rain gage
 Const SENSOR_TE525_wf    = FALSE    'Unique: TE525 or TE525MM rain gage with 8in funnel
 
-Const SENSOR_TCAV        = FALSE                   'Unique: TCAV: type E thermocouple averaging soil temperature probes
-Const SENSOR_CS616       = FALSE     'Unique: CS616: water content reflectometers for volumetric soil moisture, if true, SENSOR_CS65X and sensor TDR315 must be set to FALSE
-Const SENSOR_CS65X       = FALSE     'Unique: CS650 or CS655: water content reflectometers for volumetric soil moisture, if true, SENSOR_CS616 and SENSOR_TDR315 must be set to FALSE
-Const SENSOR_TDR315      = FALSE     'Unique: Acclima TDR-315L soil water content/temperature probes, if true, SENSOR_CS65X and SENSOR_CS616 must be false
-Const SENSOR_HFP01       = FALSE                  'Unique: HFP01: soil heat flux plates, if true, SENSOR_HFP01SC must be set to FALSE
-Const SENSOR_HFP01SC     = FALSE                   'Unique: HFP01SC: self-calibrated soil heat flux plates, if true, SENSOR_HFP01 must be set to FALSE
+Const SENSOR_TCAV        = TRUE     'Unique: TCAV: type E thermocouple averaging soil temperature probes
+Const SENSOR_CS616       = FALSE    'Unique: CS616: water content reflectometers for volumetric soil moisture, if true, SENSOR_CS65X must be set to FALSE
+Const SENSOR_CS65X       = FALSE    'Unique: CS650 or CS655: water content reflectometers for volumetric soil moisture, if true, SENSOR_CS616 must be set to FALSE
+Const SENSOR_TDR315      = TRUE     'Unique: Acclima TDR-315L soil water content/temperature probes, if true, SENSOR_CS65X and SENSOR_CS616 must be false
+Const SENSOR_HFP01       = TRUE     'Unique: HFP01: soil heat flux plates, if true, SENSOR_HFP01SC must be set to FALSE
+Const SENSOR_HFP01SC     = FALSE    'Unique: HFP01SC: self-calibrated soil heat flux plates, if true, SENSOR_HFP01 must be set to FALSE
 
-Const SENSOR_034B        = TRUE      'Unique: MetOne 034B cup & vane wind set
-Const SENSOR_GPS16X      = TRUE      'Unique: Garmin GPS16x-HVS GPS receiver
+Const SENSOR_034B        = TRUE     'Unique: MetOne 034B cup & vane wind set
+Const SENSOR_GPS16X      = TRUE     'Unique: Garmin GPS16x-HVS GPS receiver
 
 
 'Composite boolean variables for variables above
@@ -143,7 +143,7 @@ Const SENSOR_CS6XX       = ((SENSOR_CS616) OR (SENSOR_CS65X) OR (SENSOR_TDR315))
 #If (SENSOR_HFP) Then
 'Soil heat flux plates
 Const SHF_ANALOG_INPUT = 1  'Starting differential analog input channel.
-Const NMBR_SHFP = 4         'Unique: number of HFP01 or HFP01SC sensors to measure (Maximum is 4) .
+Const NMBR_SHFP = 2         'Unique: number of HFP01 or HFP01SC sensors to measure (Maximum is 4) .
 
 Data 1000/62                'Unique: multiplier for HFP01xx #1 (1000/sensitivity).
 #If (NMBR_SHFP >1) Then     'This conditional statement can avoid the confliction with Data statements for the numerical wTs transfer function from Dijk (2002)) if NMBR_SHFP < 2
@@ -240,7 +240,7 @@ Const FW_ANALOG_INPUT  = 5          'Differential analog input channel for FW (I
 #EndIf
 #If (SENSOR_Rn) Then
 ' Net radiations sensors
-Const NR_ANALOG_INPUT = 6           'Starting differential analog input channel for a net radiation sensor.
+Const NR_ANALOG_INPUT = 10           'Starting differential analog input channel for a net radiation sensor.
 
 #EndIf
 #If (SENSOR_NR_LITE) Then
@@ -343,7 +343,7 @@ Const PYRAN_OFFSET        = 0     'Unique: offset for LI200X [0 W/m^2] or CS300 
 #EndIf
 #If (SENSOR_LI190SB) Then
 
-Const QUANTUM_ANALOG_INPUT  = 8     'Differential analog input channel for quantum PAR sensor
+Const QUANTUM_ANALOG_INPUT  = 11    'Differential analog input channel for quantum PAR sensor
 Const QUANTUM_VOLTAGE_RANGE = mV20  'Unique: measurement range of voltage
 Const QUANTUM_MULT          = 256   'Unique: multiplier (1000 C) for quantum PAR sensor.
 Const QUANTUM_OFFSET        = 0     'Unique: offset for for quantum PAR sensor.
@@ -377,8 +377,8 @@ Const b2_SI111 =  13114           'Unique: calbration b2
 #EndIf
 #If (SENSOR_TCAV) Then
 
-Const TCAV_ANALOG_INPUT = 11         'Staring differential analog input channel for TCAV.
-Const NMBR_TCAV         = 2          'Unique: number of TCAV (Maximum is 2)
+Const TCAV_ANALOG_INPUT = 5          'Staring differential analog input channel for TCAV.
+Const NMBR_TCAV         = 1          'Unique: number of TCAV (Maximum is 2)
 
 '*** Beginning of TCAV wiring ***
 '11H     Signal #1 (purple)
@@ -392,7 +392,7 @@ Const NMBR_TCAV         = 2          'Unique: number of TCAV (Maximum is 2)
 #EndIf
 #If (SENSOR_CS6XX) Then
 
-Const NMBR_CS6xx = 2                'Unique: number of CS616, CS650, CS655, or TDR-315 sensors (Maximum is 2)
+Const NMBR_CS6xx = 1                'Unique: number of CS616, CS650, CS655, or TDR-315 sensors (Maximum is 2)
 
 #If (SENSOR_CS616) Then
 
@@ -436,7 +436,7 @@ Const CS65X_SDI12_Address_2 = 2        'Unique: SDI address for CS655 #2
 #If (SENSOR_TDR315) Then
 
 Const TDR315_SDI12_PORT      = 5    'Control port for SDI-12 data
-Const TDR315_SDI12_Address_1 = 1    'Unique: SDI address for TDR-315 #1
+Const TDR315_SDI12_Address_1 = 0    'Unique: SDI address for TDR-315 #1
 #If (NMBR_CS6xx = 2) Then
 Const TDR315_SDI12_Address_2 = 2    'Unique: SDI address for TDR-315 #2
 #EndIf
@@ -452,7 +452,7 @@ Const TDR315_SDI12_Address_2 = 2    'Unique: SDI address for TDR-315 #2
 #EndIf
 #If (SENSOR_TMPR_RH) Then
 
-Const TMPR_RH_ANALOG_INPUT = 27     'Single-end analog input channel for temperature and humidity probe.
+Const TMPR_RH_ANALOG_INPUT = 8      'Starting differential analog input channel for temperature and humidity probe.
 Const TMPR_RH_MULT = (100-0)/1000   'Unique: RH multiplier, all models = 0.1
 Const TMPR_RH_OFFSET = 0            'Unique: RH offset, all models = 0
 
@@ -479,7 +479,7 @@ Const TMPR_RH_T_OFFSET = -40              'Unique: temperature offset HC2S3 = -4
 #EndIf
 #If (SENSOR_TE525x) Then
 
-Const TE525_PULSE_INPUT = 1          'Pulse input channel rain gauge.
+Const TE525_PULSE_INPUT = 2          'Pulse input channel rain gauge.
 
 #If (SENSOR_TE525MM) Then
 Const TE525_MULT = 0.1        'Unique: multiplier for TE525MM
@@ -501,7 +501,7 @@ Const TE525_MULT = 0.1459     'Unique: multipler for TE525 or TE525MM w/ 8in fun
 
 Const o34B_WD_ANALOG_INPUT = 1  'Single-ended analog input channel for 034B wind direction
 Const o34B_WD_EXCITATION = 1    'Voltage excitation channel for 034B wind direction
-Const o34B_WS_PULSE_INPUT = 2   'Pulse input channel for 034B wind speed
+Const o34B_WS_PULSE_INPUT = 1   'Pulse input channel for 034B wind speed
 
 Const o34B_WD_MULT = 720        'Unique: multipler for wind direction
 Const o34B_WD_OFFSET = 0        'Unique: offset for wind direction
@@ -5105,7 +5105,7 @@ BeginProg
     #If (SENSOR_TMPR_RH) Then
 
     '*** Beginning of temperature and humidity probe measurements ***
-    VoltSe (T_probe, 2, mV1000, TMPR_RH_ANALOG_INPUT, TRUE, 0, ANALOG_INTEGRATION, 1, 0)
+    VoltDiff (T_probe, 2, mV1000, TMPR_RH_ANALOG_INPUT, TRUE, 0, ANALOG_INTEGRATION, 1, 0)
     T_probe  = T_probe*TMPR_RH_T_MULT + TMPR_RH_T_OFFSET
     RH_probe = RH_probe*TMPR_RH_MULT + TMPR_RH_OFFSET
     VaporPressure (e_probe, T_probe, RH_probe)
