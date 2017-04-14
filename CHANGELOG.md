@@ -6,8 +6,16 @@ Next release
 
 > This release requires operating system `CR3000.Std.31` or newer. 
 
+<p></p>
+
 > Previous telemetry integrations (email, ScadaBR) have been removed in this
 > version.
+
+<p></p>
+
+> The data processing core is now built upon [EasyFlux-DL by Campbell 
+> Scientific](www.campbellsci.com/easyflux-dl). This represents a substantial 
+> improvement in near real-time evaluation of carbon and energy fluxes.
 
 ### Data Table Changes
 
@@ -42,6 +50,18 @@ Next release
   calculated using CO2 density derived using high-frequency sonic temperature
   instead of slow-response thermistor temperature; for more information, refer
   to http://dx.doi.org/10.1016/j.agrformet.2016.07.018
+
+### Changes w.r.t EasyFlux v1.0
+
+* Incorporate updates from EasyFlux v1.1 release
+    * FIX: correct transposed values in constant used for dewpoint calculations
+    * Non-substantive formatting changes
+* Increased instrumentation support
+    * Additional rain gage models (TE525, TE525WS, TE525 or TE525MM used with
+      8" funnel adapter)
+    * Additional temperature/humidity probes (HC2S3, HMP45C)
+    * Cup & vane wind set (MetOne 034B)
+    * GPS receiver (GPS16X-HVS)
 
 
 
