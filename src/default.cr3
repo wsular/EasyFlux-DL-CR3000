@@ -110,8 +110,9 @@ Const SENSOR_TE525MM     = FALSE    'Unique: TE525MM (metric) rain gage
 Const SENSOR_TE525_wf    = FALSE    'Unique: TE525 or TE525MM rain gage with 8in funnel
 
 Const SENSOR_TCAV        = FALSE                   'Unique: TCAV: type E thermocouple averaging soil temperature probes
-Const SENSOR_CS616       = FALSE                   'Unique: CS616: water content reflectometers for volumetric soil moisture, if true, SENSOR_CS65X must be set to FALSE
-Const SENSOR_CS65X       = FALSE                  'Unique: CS650 or CS655: water content reflectometers for volumetric soil moisture, if true, SENSOR_CS616 must be set to FALSE
+Const SENSOR_CS616       = FALSE     'Unique: CS616: water content reflectometers for volumetric soil moisture, if true, SENSOR_CS65X and sensor TDR315 must be set to FALSE
+Const SENSOR_CS65X       = FALSE     'Unique: CS650 or CS655: water content reflectometers for volumetric soil moisture, if true, SENSOR_CS616 and SENSOR_TDR315 must be set to FALSE
+Const SENSOR_TDR315      = FALSE     'Unique: Acclima TDR-315L soil water content/temperature probes, if true, SENSOR_CS65X and SENSOR_CS616 must be false
 Const SENSOR_HFP01       = FALSE                  'Unique: HFP01: soil heat flux plates, if true, SENSOR_HFP01SC must be set to FALSE
 Const SENSOR_HFP01SC     = FALSE                   'Unique: HFP01SC: self-calibrated soil heat flux plates, if true, SENSOR_HFP01 must be set to FALSE
 
@@ -124,7 +125,7 @@ Const SENSOR_TMPR_RH     = ((SENSOR_HMP155A) OR (SENSOR_HC2S3) OR (SENSOR_HMP45C
 Const SENSOR_Rn          = ((SENSOR_CNR4) OR (SENSOR_NR01) OR (SENSOR_NR_LITE))
 Const SENSOR_TE525x      = ((SENSOR_TE525) OR (SENSOR_TE525WS) OR (SENSOR_TE525MM) OR (SENSOR_TE525_wf))
 Const SENSOR_HFP         = ((SENSOR_HFP01) OR (SENSOR_HFP01SC))
-Const SENSOR_CS6XX       = ((SENSOR_CS616) OR (SENSOR_CS65X))
+Const SENSOR_CS6XX       = ((SENSOR_CS616) OR (SENSOR_CS65X) OR (SENSOR_TDR315))
 
 '***** Wiring Instruction ******
 '*** Beginning of EC100 (IRGASON or EC150 w/ or w/o CSAT3A sonic head) wiring ***
@@ -391,7 +392,7 @@ Const NMBR_TCAV         = 2          'Unique: number of TCAV (Maximum is 2)
 #EndIf
 #If (SENSOR_CS6XX) Then
 
-Const NMBR_CS6xx = 2                'Unique: number of CS616, CS650, or CS655 sensors (Maximum is 2)
+Const NMBR_CS6xx = 2                'Unique: number of CS616, CS650, CS655, or TDR-315 sensors (Maximum is 2)
 
 #If (SENSOR_CS616) Then
 
@@ -431,6 +432,22 @@ Const CS65X_SDI12_Address_2 = 2        'Unique: SDI address for CS655 #2
 '        SDI-12 data/power reference #2 (black)
 '        Shield #2 (clear)
 '*** End of CS65X wiring ***
+#EndIf
+#If (SENSOR_TDR315) Then
+
+Const TDR315_SDI12_PORT      = 5    'Control port for SDI-12 data
+Const TDR315_SDI12_Address_1 = 1    'Unique: SDI address for TDR-315 #1
+#If (NMBR_CS6xx = 2) Then
+Const TDR315_SDI12_Address_2 = 2    'Unique: SDI address for TDR-315 #2
+#EndIf
+'*** Beginning of TDR-315 wiring ***
+'C5       SDI-12 data #1 (blue)
+'         SDI-12 data #2 (blue
+'12V      SDI-12 power #1 (red)
+'         SDI-12 power #2 (red)
+'G        SDI-12 ground #1 (white)
+'         SDI-12 ground #2 (white)
+'*** End of TDR-315 wiring ***
 #EndIf
 #EndIf
 #If (SENSOR_TMPR_RH) Then
@@ -1804,7 +1821,24 @@ Units cs65x_ec = dS/m
 Units cs65x_tmpr = C
 '*** End of CS65X constants and variables ***
 #EndIf
-#If ((SENSOR_HFP) AND  (SENSOR_CS6XX) AND ((SENSOR_TCAV) OR (SENSOR_CS65X))) Then
+#If (SENSOR_TDR315) Then
+
+'*** Beginning of TDR315 constants and variables ***
+
+Public tdr315_wc(NMBR_CS6xx)      'volumetric water content, %
+Public tdr315_tmpr(NMBR_CS6xx)    'soil temperature, degC
+Public tdr315_E(NMBR_CS6xx)       'soil permittivity, unitless
+Public tdr315_bulkEC(NMBR_CS6xx)  'bulk electrical conductivity, uS/cm
+Public tdr315_poreEC(NMBR_CS6xx)  'soil pore water EC, uS/cm
+Dim tdr315_raw(5)       'holds response from sensor #X
+Units tdr315_wc = frac_v_wtr
+Units tdr315_tmpr = C
+Units tdr315_E = unitless
+Units tdr315_bulkEC = uS/cm
+Units tdr315_poreEC = uS/cm
+'*** End of TDR315 constants and variables ***
+#EndIf
+#If ((SENSOR_HFP) AND  (SENSOR_CS6XX) AND ((SENSOR_TCAV) OR (SENSOR_CS65X) OR (SENSOR_TDR315))) Then
 
 '*** Beginning of variables for calculation of soil heat flux at soil surface ***
 Const NMBR_SOIL_T_WTR_DEL_SAMPLES = (60*1000)/SLOWSEQUENCE_SCAN_INTERVAL       'Unique: Number of measurements to compute a one-minute mean of soil temperature and water
@@ -1832,7 +1866,7 @@ Dim realtime_array(9)                      'Hold real time data
 Dim Offset_intv_Delta_ht_storage           'time interval offset
 '*** End of variables for calculation of soil heat flux at soil surface ***
 #EndIf
-#If ((SENSOR_Rn) AND (SENSOR_HFP) AND (SENSOR_CS6XX) AND ((SENSOR_TCAV) OR (SENSOR_CS65X))) Then
+#If ((SENSOR_Rn) AND (SENSOR_HFP) AND (SENSOR_CS6XX) AND ((SENSOR_TCAV) OR (SENSOR_CS65X) OR (SENSOR_TDR315))) Then
 
 '*** Beginning of energy balance constants and variables ***
 Public energy_closure                  '(LE + H)/(Rn-G_surface)
@@ -1940,7 +1974,7 @@ DisplayMenu ("System Control", TRUE)
     MenuItem ("Meas height",   height_measurement)
     MenuItem ("Canopy height", height_canopy)
 
-    #If ((SENSOR_HFP) AND (SENSOR_CS6XX) AND ((SENSOR_TCAV) OR (SENSOR_CS65X))) Then
+    #If ((SENSOR_HFP) AND (SENSOR_CS6XX) AND ((SENSOR_TCAV) OR (SENSOR_CS65X) OR (SENSOR_TDR315))) Then
     MenuItem ("Bulk density", soil_bulk_density)
     MenuItem ("C_dry_soil",   Cds)
     MenuItem ("HFP depth",    thick_abv_SHFP)
@@ -2210,6 +2244,16 @@ DataTable (Flux, TRUE, FLUX_SIZE_CPU)
   Average (NMBR_CS6xx, cs65x_ec(1),  IEEE4, slowsequence_disable_flg)            'Electrical conductivity.
   Average (NMBR_CS6xx, cs65x_tmpr(1),IEEE4, slowsequence_disable_flg)            'CS65X probe temperature.
   '*** End of CS65X output data ***
+  #EndIf
+  #If (SENSOR_TDR315) Then
+  
+  '*** Beginning of TDR315 output data ***
+  Average (NMBR_CS6xx, tdr315_wc(1),   IEEE4, slowsequence_disable_flg)
+  Average (NMBR_CS6xx, tdr315_tmpr(1), IEEE4, slowsequence_disable_flg)
+  Average (NMBR_CS6xx, tdr315_E(1),   IEEE4, slowsequence_disable_flg)
+  Average (NMBR_CS6xx, tdr315_bulkEC(1),   IEEE4, slowsequence_disable_flg)
+  Average (NMBR_CS6xx, tdr315_poreEC(1),   IEEE4, slowsequence_disable_flg)
+  '*** End of TDR315 output data ***
   #EndIf
   #If (SENSOR_HFP) Then
 
@@ -4186,7 +4230,7 @@ BeginProg
   Next i
   ' *** End of loading transfer function values of Dijk (2002) ***
 
-  #If ((SENSOR_HFP) AND  (SENSOR_CS6XX) AND ((SENSOR_TCAV) OR (SENSOR_CS65X))) Then
+  #If ((SENSOR_HFP) AND  (SENSOR_CS6XX) AND ((SENSOR_TCAV) OR (SENSOR_CS65X) OR (SENSOR_TDR315))) Then
   ' Variables used to calculate the number of seconds from the beginning of the program to the end of the first averaging interval (time interval offset)
   RealTime(realtime_array(1))
   Offset_intv_Delta_ht_storage = ((3600*realtime_array(4) + 60*realtime_array(5) + realtime_array(6)) MOD (60*OUTPUT_INTERVAL))
@@ -4989,17 +5033,17 @@ BeginProg
 
         GetRecord (shf_plate_avg(1), stats_SHF, 1)
 
-        #If (((SENSOR_TCAV) OR (SENSOR_CS65X)) AND (SENSOR_CS6XX)) Then
+        #If (((SENSOR_TCAV) OR (SENSOR_CS65X)) AND (SENSOR_CS6XX) OR (SENSOR_TDR315)) Then
         AvgSpa(G_surface, NMBR_SHFP, shf_plate_avg(1))                           'G_surface is used as a temporary variable
 
         #If (SENSOR_TCAV) Then
         AvgSpa(Tsoil_current_Avg, NMBR_TCAV, Tsoil_current (1))
         #EndIf
-        #If ((NOT SENSOR_TCAV) AND (SENSOR_CS65X)) Then
-        AvgSpa(Tsoil_current_Avg, NMBR_CS6xx, Tsoil_current (1))
+        #If ((NOT SENSOR_TCAV) AND ((SENSOR_CS65X) OR (SENSOR_TDR315))) Then
+        AvgSpa(Tsoil_current_Avg, NMBR_CS6xx, Tsoil_current (1)) 'XXXX
         #EndIf
 
-        AvgSpa(soil_wtr_current_Avg, NMBR_CS6xx, soil_wtr_current (1))
+        AvgSpa(soil_wtr_current_Avg, NMBR_CS6xx, soil_wtr_current (1)) 'XXXX
 
         Delta_soil_ht_storage = ((Tsoil_current_Avg - Tsoil_prev_Avg)*Cds*soil_bulk_density + _
         (Tsoil_current_Avg*soil_wtr_current_Avg - Tsoil_prev_Avg*soil_wtr_prev_Avg)*1000*Cw)*thick_abv_SHFP/(60*OUTPUT_INTERVAL-Offset_intv_Delta_ht_storage)
@@ -5236,7 +5280,7 @@ BeginProg
     '*** Beginning of TCAV measurements ***
     TCDiff (Tsoil(1), NMBR_TCAV, AutoRange, TCAV_ANALOG_INPUT, TypeE, panel_tmpr, TRUE, 0, ANALOG_INTEGRATION, 1, 0)
 
-    #If ((SENSOR_HFP) AND  (SENSOR_CS6XX) AND ((SENSOR_TCAV) OR (SENSOR_CS65X))) Then
+    #If ((SENSOR_HFP) AND  (SENSOR_CS6XX) AND ((SENSOR_TCAV) OR (SENSOR_CS65X) OR (SENSOR_TDR315))) Then
     AvgRun (Tsoil_current(1), NMBR_TCAV, Tsoil(1), NMBR_SOIL_T_WTR_DEL_SAMPLES)
 
     If (Tsoil_prev_Avg = NaN) Then                         'As soon as program starts
@@ -5318,6 +5362,43 @@ BeginProg
     #EndIf
     #EndIf
     '*** End of CS65X measurements ***
+    #EndIf
+    #If (SENSOR_TDR315) Then
+
+    '*** Beginning of TDR-315 measurements ***
+    SDI12Recorder (tdr315_raw(1), TDR315_SDI12_PORT, TDR315_SDI12_Address_1, "M!", 1, 0)
+    tdr315_wc(1)     = tdr315_raw(1)
+    tdr315_tmpr(1)   = tdr315_raw(2)
+    tdr315_E(1)      = tdr315_raw(3)
+    tdr315_bulkEC(1) = tdr315_raw(4)
+    tdr315_poreEC(1) = tdr315_raw(5)
+    
+    #If (NMBR_CS6xx = 2) Then
+    SDI12Recorder (tdr315_raw(1), TDR315_SDI12_PORT, TDR315_SDI12_Address_2, "M!", 1, 0)
+    tdr315_wc(2)     = tdr315_raw(1)
+    tdr315_tmpr(2)   = tdr315_raw(2)
+    tdr315_E(2)      = tdr315_raw(3)
+    tdr315_bulkEC(2) = tdr315_raw(4)
+    tdr315_poreEC(2) = tdr315_raw(5)
+    #EndIf
+    
+    #If ((SENSOR_HFP) AND (SENSOR_CS6XX) AND ((SENSOR_TCAV) OR (SENSOR_TDR315))) Then
+
+    AvgRun (soil_wtr_current(1), NMBR_CS6xx, tdr315_wc(1), NMBR_SOIL_T_WTR_DEL_SAMPLES)
+    
+    If (soil_wtr_prev_Avg = NaN) Then
+      AvgSpa (soil_wtr_prev_Avg, NMBR_CS6xx, tdr315_wc(1))
+    EndIf
+
+    #If ((SENSOR_TDR315) AND ( NOT SENSOR_TCAV)) Then
+    AvgRun (Tsoil_current(1), NMBR_CS6xx, tdr315_tmpr(1), NMBR_SOIL_T_WTR_DEL_SAMPLES)
+
+    If (Tsoil_prev_Avg = NaN) Then                         'As soon as program starts
+      AvgSpa (Tsoil_prev_Avg, NMBR_CS6xx, tdr315_tmpr(1))
+    EndIf
+    #EndIf
+    #EndIf
+    '*** End of TDR-315 measurements ***
     #EndIf
 
     #If (SENSOR_LI200X) OR (SENSOR_CS300) Then
