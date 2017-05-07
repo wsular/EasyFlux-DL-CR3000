@@ -2658,10 +2658,15 @@ DataTable (Time_Series, TRUE, -1)
   #If (SENSOR_IRGASON) Then
   Sample (1, Tc, IEEE4)
   FieldNames ("Tc")
-  #EndIf
 
   Sample (4, amb_tmpr,IEEE4)
   FieldNames ("amb_tmpr,amb_press, CO2_sig_strgth, H2O_sig_strgth")
+  #EndIf
+
+  #If (SENSOR_CSAT3AEC150) Then
+  Sample (5, amb_tmpr,IEEE4)
+  FieldNames ("amb_tmpr,amb_press, CO2_sig_strgth, H2O_sig_strgth,CO2_hf")
+  #EndIf
   '*** End of IRGA time series output ***
 
   #If (SENSOR_FW) Then
