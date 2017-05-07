@@ -867,7 +867,7 @@ Alias diag_bits_sonic(5) = sonic_aq_sig_f  'Sonic acquiring signals warning flag
 Alias diag_bits_sonic(6) = sonic_cal_err_f 'Signature error in reading sonic head calibration data
 Units diag_bits_sonic    = unitless
 
-Dim sonic_irga_raw(12)                     'Hold the first 12 data of EC100 from sonic, IRGA, temperature sensor, and barometer (raw data before applying instrument scan lag).
+Dim sonic_irga_raw(13)                     'Hold the first 12 data of EC100 from sonic, IRGA, temperature sensor, and barometer (raw data before applying instrument scan lag).
 
 Dim diag_sonic_tmp  As Long                'Working variable used to break out the sonic head diagnostic bits.
 Dim sonic_disable_f As Boolean             'TRUE when any sonic diagnostic warning flag is on, sonic has not sent data, or an SDM signature error is reported.
@@ -1112,7 +1112,7 @@ Units  separation_lag_dist_irga  =  m
 Units  separation_lag_scan_irga  =  scans
 
 'Data from IRGA
-Public irga(14)                     'Hold IRGA data
+Public irga(15)                     'Hold IRGA data
 Alias irga(1)  = CO2
 Alias irga(2)  = H2O
 Alias irga(3)  = diag_irga
@@ -1120,15 +1120,16 @@ Alias irga(4)  = amb_tmpr           'Temperature measured by temperature probe c
 Alias irga(5)  = amb_press          'Pressure measured by a barometer connected to EC100
 Alias irga(6)  = CO2_sig_strgth
 Alias irga(7)  = H2O_sig_strgth
+Alias irga(8)  = CO2_hf             'irga(1) calculated using sonic temp instead of temperature probe
 
-Alias irga(8)  = Tc                 'Air temperature (C), found from IRGASON' sonic temperature, water vapor density, or in case of the EC150/CSAT3A Tc=amb_tmpr from EC100 T probe
-Alias irga(9)  = RH                 'Relative humidity (%): derived from Tc, H2O, and amb_press
-Alias irga(10) = e_sat              'Saturation vapor pressure (kPa): derived from Tc, H2O, and amb_press
-Alias irga(11) = e                  'Vapor pressure (kPa): derived from Tc, H2O. and amb_press
-Alias irga(12) = Td                 'Dew point temperature (C): derived from Tc, H2O, and amb_press
+Alias irga(9)  = Tc                 'Air temperature (C), found from IRGASON' sonic temperature, water vapor density, or in case of the EC150/CSAT3A Tc=amb_tmpr from EC100 T probe
+Alias irga(10) = RH                 'Relative humidity (%): derived from Tc, H2O, and amb_press
+Alias irga(11) = e_sat              'Saturation vapor pressure (kPa): derived from Tc, H2O, and amb_press
+Alias irga(12) = e                  'Vapor pressure (kPa): derived from Tc, H2O. and amb_press
+Alias irga(13) = Td                 'Dew point temperature (C): derived from Tc, H2O, and amb_press
 
-Alias irga(13) = CO2_mixratio       'CO2 mixing ratio
-Alias irga(14) = H2O_mixratio       'H2O mixing ratio
+Alias irga(14) = CO2_mixratio       'CO2 mixing ratio
+Alias irga(15) = H2O_mixratio       'H2O mixing ratio
 
 Units CO2            = mg/m^3
 Units H2O            = g/m^3
@@ -1137,6 +1138,7 @@ Units amb_tmpr       = C
 Units amb_press      = kPa
 Units CO2_sig_strgth = fraction
 Units H2O_sig_strgth = fraction
+Units CO2_hf         = mg/m^3
 Units Tc             = C
 Units RH             = %
 Units e_sat          = kPa
@@ -1489,6 +1491,107 @@ DataTable (comp_mean, TRUE, 1)
 
 EndTable
 '*** End of IRGA constants, variables, and working data table ***
+
+'*** Beginning of old eddy-covariance processing data table
+Dim cov_array_sonic(1,4)                   'used to hold input data for cov instructions 
+Dim cov_array_cs(4,4)
+
+Const old_Lv = 2440 'estimate of latent heat of vaporization, J/g
+Const old_Cp = 1004.67 'estimate of heat capacity of air, J/(kg K)
+'MU_WPL, Rd change <=0.1% by using new program variables
+Dim old_tau
+Dim old_L
+Dim old_u_star
+Dim old_rho_d_mean 'kg/m^3
+Dim old_rho_a_mean 'kg/m^3
+Dim old_sigma_wpl
+Dim old_Fc_irga
+Dim old_LE_irga
+Dim old_CO2_wpl_LE
+Dim old_CO2_wpl_H
+Dim old_Fc_wpl
+Dim old_H2O_wpl_LE
+Dim old_H2O_wpl_H
+Dim old_LE_wpl
+Dim old_Fc_hf_irga
+Dim old_CO2_hf_wpl_LE
+Dim old_CO2_hf_wpl_H
+Dim old_Fc_hf_wpl
+Dim old_Hs
+Dim old_Hc
+Units old_L = m
+Units old_u_star = m/s
+Units old_Fc_irga = mg/(m^2 s)
+Units old_LE_irga = W/m^2
+Units old_CO2_wpl_LE = mg/(m^2 s)
+Units old_CO2_wpl_H = mg/(m^2 s)
+Units old_Fc_wpl = mg/(m^2 s)
+Units old_H2O_wpl_LE = W/m^2
+Units old_H2O_wpl_H = W/m^2
+Units old_LE_wpl = W/m^2
+Units old_Fc_hf_irga = mg/(m^2 s)
+Units old_CO2_hf_wpl_LE = mg/(m^2 s)
+Units old_CO2_hf_wpl_H = mg/(m^2 s)
+Units old_Fc_hf_wpl = mg/(m^2 s)
+Units old_Hs = W/m^2
+Units old_Hc = W/m^2
+
+Dim old_work_out(31)
+Alias old_work_out(1) = old_Ts_Ts_cov          'results of covariance instructions, 10 qntys
+Alias old_work_out(2) = old_Ts_Ux_cov
+Alias old_work_out(3) = old_Ts_Uy_cov
+Alias old_work_out(4) = old_Ts_Uz_cov
+Alias old_work_out(5) = old_Ux_Ux_cov
+Alias old_work_out(6) = old_Ux_Uy_cov
+Alias old_work_out(7) = old_Ux_Uz_cov
+Alias old_work_out(8) = old_Uy_Uy_cov
+Alias old_work_out(9) = old_Uy_Uz_cov
+Alias old_work_out(10) = old_Uz_Std
+Alias old_work_out(11) = old_CO2_mg_m3_Std 			   'results of 3 covariances, 12 #s
+Alias old_work_out(12) = old_CO2_Ux_cov
+Alias old_work_out(13) = old_CO2_Uy_cov
+Alias old_work_out(14) = old_CO2_Uz_cov
+Alias old_work_out(15) = old_H2O_g_m3_Std
+Alias old_work_out(16) = old_H2O_Ux_cov
+Alias old_work_out(17) = old_H2O_Uy_cov
+Alias old_work_out(18) = old_H2O_Uz_cov
+Alias old_work_out(19) = old_Tc_stdev
+Alias old_work_out(20) = old_Tc_Ux_cov
+Alias old_work_out(21) = old_Tc_Uy_cov
+Alias old_work_out(22) = old_Tc_Uz_cov
+Alias old_work_out(23) = old_CO2_mg_m3_Avg    'four averages
+Alias old_work_out(24) = old_H2O_g_m3_Avg
+Alias old_work_out(25) = old_amb_press_Avg
+Alias old_work_out(26) = old_Tc_Avg
+Alias old_work_out(27) = old_CO2_hf_mg_m3_Avg '1 average
+Alias old_work_out(28) = old_CO2_hf_mg_m3_Std 'results of 1 covariance, 4#s
+Alias old_work_out(29) = old_CO2_hf_Ux_cov
+Alias old_work_out(30) = old_CO2_hf_Uy_cov
+Alias old_work_out(31) = old_CO2_hf_Uz_cov
+Units old_Uz_Std = m/s
+Units old_CO2_mg_m3_Std = mg/m^3
+Units old_H2O_g_m3_Std = g/m^3
+Units old_CO2_mg_m3_Avg = mg/m^3
+Units old_H2O_g_m3_Avg = g/m^3
+Units old_amb_press_Avg = kPa
+Units old_Tc_Avg = C
+Units old_CO2_hf_mg_m3_Std = mg/m^3
+
+DataTable(old_cov_work,TRUE,1)
+  TableHide
+  DataInterval(0,OUTPUT_INTERVAL,Min,1)
+  Covariance(4,cov_array_sonic(1,1),IEEE4,sonic_disable_f,10)
+  Covariance(4,cov_array_cs(1,1),IEEE4,irga_disable_f,4)
+  Covariance(4,cov_array_cs(2,1),IEEE4,irga_disable_f,4)
+  Covariance(4,cov_array_cs(3,1),IEEE4,irga_disable_f,4)
+  Average(1,CO2,IEEE4,irga_disable_f)
+  Average(1,H2O,IEEE4,irga_disable_f)
+  Average(1,amb_press,IEEE4,irga_disable_f)
+  Average(1,Tc,IEEE4,irga_disable_f)
+  Average(1,CO2_hf,IEEE4,irga_disable_f)
+  Covariance(4,cov_array_cs(4,1),IEEE4,irga_disable_f,4)
+EndTable
+'*** End of old eddy-covariance processing data table
 
 #If (SENSOR_FW) Then
 '*** Beginning of FW constants, variables, and working data table ***
@@ -2064,6 +2167,24 @@ Const ONE_FULL_TABLE = FALSE         'Unique: TRUE if all hourly or half-hourly 
 DataTable (Flux, TRUE, FLUX_SIZE_CPU)
   DataInterval (0, OUTPUT_INTERVAL, Min, 10)
   TableFile ("CRD:"&Status.SerialNumber(1,1)&".Flux_", 64, -1, 0, NMBR_DAY_FLUX_CRD, Day, 0, 0)
+
+  '*** Beginning of old flux eddy covariance output ***
+  #If (SENSOR_CSAT3AEC150) Then
+  Sample(1,old_L,IEEE4)              'monin obukhov length, meters
+  Sample(1,old_u_star,IEEE4)         'friction velocity, m/s
+  Sample(1,old_Fc_wpl,IEEE4)         'density-corrected (WPL) CO2 flux, mg/m3
+  Sample(1,old_Fc_hf_wpl,IEEE4)      'WPL-corrected CO2 flux using alt. CO2 value
+  Sample(1,old_LE_wpl,IEEE4)         'density-corrected (WPL) latent heat flux, W/m2
+  Sample(1,old_Hc,IEEE4)             'density-corrected sensible heat flux, W/m2
+  Sample(1,old_Uz_Std,IEEE4)         'stdev of vertical wind, m/s
+  Sample(1,old_CO2_mg_m3_Avg,IEEE4)         'mean of CO2 conc, mg/m3
+  Sample(1,old_CO2_mg_m3_Std,IEEE4)         'stdev of CO2 conc, mg/m3
+  Sample(1,old_CO2_hf_mg_m3_Avg,IEEE4) 
+  Sample(1,old_CO2_hf_mg_m3_Std,IEEE4)
+  Sample(1,old_Tc_Avg,IEEE4)
+  Sample(1,old_amb_press_Avg,IEEE4)
+  #EndIf
+  '*** End of old eddy covariance output ***
 
   '**** Beginning of flux and quality classification data ***
   Sample (1, Fc_molar,    IEEE4)    'Carbon dioxide flux in umol/(m^2 s) after coordinate rotations, freq corrections, and WPL correction
@@ -4863,6 +4984,62 @@ BeginProg
 
       EndIf
       '*** End of IRGA processing ***
+      
+
+      '*** Beginning of old eddy-covariance processing
+      #If (SENSOR_CSAT3AEC150) Then
+      cov_array_sonic(1,1) = Ts
+      Move (cov_array_sonic(1,2),3,Ux,3)
+
+      cov_array_cs(1,1) = CO2
+      cov_array_cs(2,1) = H2O
+      cov_array_cs(3,1) = Tc
+      cov_array_cs(4,1) = CO2_hf
+      Move (cov_array_cs(1,2),3,Ux,3)
+      Move (cov_array_cs(2,2),3,Ux,3)
+      Move (cov_array_cs(3,2),3,Ux,3)
+      Move (cov_array_cs(4,2),3,Ux,3)
+
+      CallTable old_cov_work
+      If (old_cov_work.Output(1,1)) Then
+        GetRecord(old_work_out(1),old_cov_work,1)
+        
+        old_tau = SQR((old_Ux_Uz_cov*old_Ux_Uz_cov)+(old_Uy_Uz_cov*old_Uy_Uz_cov))
+        old_L = -old_u_star^3*(old_Tc_Avg+273.15)/(0.4*9.8*old_Ts_Uz_cov)
+        old_rho_d_mean = (old_amb_press_Avg/((old_Tc_Avg+273.15)*Rd))-(old_H2O_g_m3_Avg*MU_WPL)
+        old_rho_a_mean = (old_rho_d_mean+old_H2O_g_m3_Avg)/1000
+        old_Fc_irga = old_CO2_Uz_cov
+        old_LE_irga = old_Lv*old_H2O_Uz_cov
+        old_CO2_mg_m3_Std = SQR (old_CO2_mg_m3_Std)
+        old_H2O_g_m3_Std = SQR (old_H2O_g_m3_Std)
+        old_sigma_wpl = old_H2O_g_m3_Avg/old_rho_d_mean                   'WPL term
+
+        'EC150 Webb et al. (1980) term for carbon dioxide Eq. (24).
+        old_CO2_wpl_LE = MU_WPL*old_CO2_mg_m3_Avg/old_rho_d_mean*old_H2O_Uz_cov
+        old_CO2_wpl_H = (1+(MU_WPL*old_sigma_wpl))*old_CO2_mg_m3_Avg/(old_Tc_Avg+273.15)*old_Tc_Uz_cov
+        old_Fc_wpl = old_Fc_irga+old_CO2_wpl_LE+old_CO2_wpl_H
+
+        'EC150 Webb et al. (1980) term for water vapor Eq. (25).
+        old_H2O_wpl_LE = MU_WPL*old_sigma_wpl*old_LE_irga
+        old_H2O_wpl_H = (1+(MU_WPL*old_sigma_wpl))*old_H2O_g_m3_Avg/(old_Tc_Avg+273.15)*old_Lv*old_Tc_Uz_cov
+        old_LE_wpl = old_LE_irga+old_H2O_wpl_LE+old_H2O_wpl_H
+
+        'repeat using high-frequency tmpr CO2 value
+        old_Fc_hf_irga = old_CO2_hf_Uz_cov
+        old_CO2_hf_mg_m3_Std = SQR(old_CO2_hf_mg_m3_Std)
+        old_CO2_hf_wpl_LE = MU_WPL*old_CO2_hf_mg_m3_Avg/old_rho_d_mean*old_H2O_Uz_cov
+        old_CO2_hf_wpl_H = (1+(MU_WPL*old_sigma_wpl))*old_CO2_hf_mg_m3_Avg/(old_Tc_Avg+273.15)*old_Tc_Uz_cov
+        old_Fc_hf_wpl = old_Fc_hf_irga+old_CO2_hf_wpl_LE+old_CO2_hf_wpl_H
+        
+        old_Hs = old_rho_a_mean*old_Cp*old_Ts_Uz_cov
+        old_tau = old_rho_a_mean*old_tau
+        old_Uz_Std = SQR(old_Uz_Std)
+        old_Hc = old_rho_a_mean*old_Cp*old_Tc_Uz_cov
+      EndIf
+      #EndIf
+      '*** End of old eddy-covariance processing
+
+
       #If (SENSOR_TMPR_RH) Then
 
       '*** Beginning of temperature and humidity processing ***
