@@ -116,6 +116,8 @@ Const SENSOR_TDR315      = TRUE     'Unique: Acclima TDR-315L soil water content
 Const SENSOR_HFP01       = TRUE     'Unique: HFP01: soil heat flux plates, if true, SENSOR_HFP01SC must be set to FALSE
 Const SENSOR_HFP01SC     = FALSE    'Unique: HFP01SC: self-calibrated soil heat flux plates, if true, SENSOR_HFP01 must be set to FALSE
 
+Const PROFILE_TDR315     = TRUE     'Unique: soil profile composed of Acclima TDR-315L probes
+
 Const SENSOR_034B        = TRUE     'Unique: MetOne 034B cup & vane wind set
 Const SENSOR_GPS16X      = TRUE     'Unique: Garmin GPS16x-HVS GPS receiver
 
@@ -126,6 +128,7 @@ Const SENSOR_Rn          = ((SENSOR_CNR4) OR (SENSOR_NR01) OR (SENSOR_NR_LITE))
 Const SENSOR_TE525x      = ((SENSOR_TE525) OR (SENSOR_TE525WS) OR (SENSOR_TE525MM) OR (SENSOR_TE525_wf))
 Const SENSOR_HFP         = ((SENSOR_HFP01) OR (SENSOR_HFP01SC))
 Const SENSOR_CS6XX       = ((SENSOR_CS616) OR (SENSOR_CS65X) OR (SENSOR_TDR315))
+Const SENSOR_PROFILE     = ((PROFILE_TDR315))
 
 '***** Wiring Instruction ******
 '*** Beginning of EC100 (IRGASON or EC150 w/ or w/o CSAT3A sonic head) wiring ***
@@ -448,6 +451,26 @@ Const TDR315_SDI12_Address_2 = 2    'Unique: SDI address for TDR-315 #2
 'G        SDI-12 ground #1 (white)
 '         SDI-12 ground #2 (white)
 '*** End of TDR-315 wiring ***
+#EndIf
+#EndIf
+#If (SENSOR_PROFILE) Then
+
+Const NMBR_PROFILE = 6  'number of T/VWC probes in profile
+
+#If (PROFILE_TDR315) Then
+
+Const TDR315_SDI12_Address_P = 3      'Unique: first address in sequential series
+#If (NOT SENSOR_TDR315) Then
+Const TDR315_SDI12_PORT    = 7      'Control port for SDI-12 data
+'*** Beginning of TDR-315 wiring ***
+'C5       SDI-12 data #1 (blue)
+'         SDI-12 data #2 (blue
+'12V      SDI-12 power #1 (red)
+'         SDI-12 power #2 (red)
+'G        SDI-12 ground #1 (white)
+'         SDI-12 ground #2 (white)
+'*** End of TDR-315 wiring ***
+#EndIf
 #EndIf
 #EndIf
 #If (SENSOR_TMPR_RH) Then
@@ -1934,12 +1957,30 @@ Public tdr315_E(NMBR_CS6xx)       'soil permittivity, unitless
 Public tdr315_bulkEC(NMBR_CS6xx)  'bulk electrical conductivity, uS/cm
 Public tdr315_poreEC(NMBR_CS6xx)  'soil pore water EC, uS/cm
 Dim tdr315_raw(5)       'holds response from sensor #X
-Units tdr315_wc = frac_v_wtr
+Units tdr315_wc = %
 Units tdr315_tmpr = C
 Units tdr315_E = unitless
 Units tdr315_bulkEC = uS/cm
 Units tdr315_poreEC = uS/cm
 '*** End of TDR315 constants and variables ***
+#EndIf
+#If (PROFILE_TDR315) Then
+
+'*** Beginning of TDR315 profile constants and variables ***
+Public profile_tdr315_wc(NMBR_PROFILE)      'volumetric water content, %
+Public profile_tdr315_tmpr(NMBR_PROFILE)    'soil temperature, degC
+Public profile_tdr315_E(NMBR_PROFILE)       'soil permittivity, unitless
+Public profile_tdr315_bulkEC(NMBR_PROFILE)  'bulk electrical conductivity, uS/cm
+Public profile_tdr315_poreEC(NMBR_PROFILE)  'soil pore water EC, uS/cm
+#If (NOT SENSOR_TDR315) Then
+Dim tdr315_raw(5)       'holds response from sensor #X
+#EndIf
+Units profile_tdr315_wc = %
+Units profile_tdr315_tmpr = C
+Units profile_tdr315_E = unitless
+Units profile_tdr315_bulkEC = uS/cm
+Units profile_tdr315_poreEC = uS/cm
+'*** End of TDR315 profile constants and variables ***
 #EndIf
 #If ((SENSOR_HFP) AND  (SENSOR_CS6XX) AND ((SENSOR_TCAV) OR (SENSOR_CS65X) OR (SENSOR_TDR315))) Then
 
@@ -2389,6 +2430,16 @@ DataTable (Flux, TRUE, FLUX_SIZE_CPU)
   '*** End of HFP01SC output data ***
   #EndIf
 
+  #If (PROFILE_TDR315) Then
+  
+  '*** Beginning of TDR315 profile output data ***
+  Average (NMBR_PROFILE, profile_tdr315_wc(1),   IEEE4, slowsequence_disable_flg)
+  Average (NMBR_PROFILE, profile_tdr315_tmpr(1), IEEE4, slowsequence_disable_flg)
+  Average (NMBR_PROFILE, profile_tdr315_E(1),   IEEE4, slowsequence_disable_flg)
+  Average (NMBR_PROFILE, profile_tdr315_bulkEC(1),   IEEE4, slowsequence_disable_flg)
+  Average (NMBR_PROFILE, profile_tdr315_poreEC(1),   IEEE4, slowsequence_disable_flg)
+  '*** End of TDR315 profile output data ***
+  #EndIf  
   '*** Footprint characteristics ****
   Sample (1, upwnd_dist_intrst, IEEE4)  'User-entered upwind distance of interest for the average upwind direction in this averaging interval
   Sample (1, FP_dist_intrst,    IEEE4)  'Percentage of measured scalar flux from upwind range of interest
@@ -5583,6 +5634,22 @@ BeginProg
     '*** End of TDR-315 measurements ***
     #EndIf
 
+    #If (SENSOR_PROFILE) Then
+
+    '*** Beginning of TDR-315 profile measurements ***
+    For i_slow = 1 To NMBR_PROFILE
+      #If (PROFILE_TDR315) Then
+      'XXXX WARNING assumes no address above 9 (default: 6 sensors #3-8)
+      SDI12Recorder (tdr315_raw(1), TDR315_SDI12_PORT, TDR315_SDI12_Address_P+i_slow-1, "M!", 1, 0)
+      profile_tdr315_wc(i_slow) = tdr315_raw(1)
+      profile_tdr315_tmpr(i_slow) = tdr315_raw(2)
+      profile_tdr315_E(i_slow) = tdr315_raw(3)
+      profile_tdr315_bulkEC(i_slow) = tdr315_raw(4)
+      profile_tdr315_poreEC(i_slow) = tdr315_raw(5)
+      #EndIf
+    Next i_slow
+    '*** End of TDR-315 profile measurements ***
+    #EndIf
     #If (SENSOR_LI200X) OR (SENSOR_CS300) Then
 
     '*** Beginning of pyranometer measurements ***

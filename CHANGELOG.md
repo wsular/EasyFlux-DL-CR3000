@@ -34,7 +34,8 @@ Next release
 
 ### Instrumentation Changes
 
-* Remove soil temp/moisture probes (8x Decagon Devices 5TM)
+* Change soil temp/moisture probes in vertical profile and in layer above soil
+  heat flux plates (8x Decagon Devices 5TM &rarr; 6x Acclima TDR-315L)
 * Change soil temperature probes in layer above soil heat flux plates 
   (2x CSI model 109 probes &rarr; 1x CSI averaging thermocouple)
 * Remove prototype NDVI/PRI sensors (Decagon Devices)
@@ -64,6 +65,7 @@ Next release
     * Cup & vane wind set (MetOne 034B)
     * GPS receiver (GPS16X-HVS)
     * Additional soil temperature/water content probe (Acclima TDR-315L)
+* Reintroduce vertical profile of soil tmpr/VWC probes (Acclima TDR-315L)
 
 
 
