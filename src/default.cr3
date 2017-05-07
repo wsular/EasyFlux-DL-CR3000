@@ -1814,7 +1814,7 @@ Units R_SW_in       = W/m^2
 Units R_SW_out      = W/m^2
 Units R_LW_in       = W/m^2
 Units R_LW_out      = W/m^2
-Units T_nr          = Klvin
+Units T_nr          = Kelvin
 Units R_LW_in_meas  = W/m^2
 Units R_LW_out_meas = W/m^2
 '*** End of NR01/CNR4 constants and variables ***
