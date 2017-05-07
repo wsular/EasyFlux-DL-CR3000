@@ -31,6 +31,8 @@ http://manuals.decagon.com/Integration%20Guides/SRS-N%20Integrators%20Guide.pdf 
 http://manuals.decagon.com/Integration%20Guides/SRS-P%20Integrators%20Guide.pdf    Decagon SRS-PRI Integrator Guide.pdf
 http://www.decagon.com/assets/Uploads/SRS-pair-example-program.CR1.zip    Decagon SRS Example CR1K Program.zip
 http://www.acclima.com/poc7/prodlit/TDR-315%20User%20Manual.pdf    Acclima TDR-315 User Manual.pdf
+http://manuals.decagon.com/Manuals/13441_5TM_Web.pdf    Decagon Devices 5TM Manual.pdf
+http://manuals.decagon.com/Integration%20Guides/5TM%20Integrators%20Guide.pdf    Decagon Devices 5TM Integrator Guide.pdf
 
  # software
 http://s.campbellsci.com/documents/us/manuals/loggernet.pdf    CSI LoggerNet Instruction Manual.pdf

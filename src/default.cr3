@@ -110,13 +110,16 @@ Const SENSOR_TE525MM     = FALSE    'Unique: TE525MM (metric) rain gage
 Const SENSOR_TE525_wf    = FALSE    'Unique: TE525 or TE525MM rain gage with 8in funnel
 
 Const SENSOR_TCAV        = TRUE     'Unique: TCAV: type E thermocouple averaging soil temperature probes
-Const SENSOR_CS616       = FALSE    'Unique: CS616: water content reflectometers for volumetric soil moisture, if true, SENSOR_CS65X must be set to FALSE
-Const SENSOR_CS65X       = FALSE    'Unique: CS650 or CS655: water content reflectometers for volumetric soil moisture, if true, SENSOR_CS616 must be set to FALSE
-Const SENSOR_TDR315      = TRUE     'Unique: Acclima TDR-315L soil water content/temperature probes, if true, SENSOR_CS65X and SENSOR_CS616 must be false
 Const SENSOR_HFP01       = TRUE     'Unique: HFP01: soil heat flux plates, if true, SENSOR_HFP01SC must be set to FALSE
 Const SENSOR_HFP01SC     = FALSE    'Unique: HFP01SC: self-calibrated soil heat flux plates, if true, SENSOR_HFP01 must be set to FALSE
+'Select at most 1 soil T/VWC probe:
+Const SENSOR_CS616       = FALSE    'Unique: CS616: water content reflectometers for volumetric soil moisture
+Const SENSOR_CS65X       = FALSE    'Unique: CS650 or CS655: water content reflectometers for volumetric soil moisture
+Const SENSOR_TDR315      = TRUE     'Unique: Acclima TDR-315L soil water content/temperature probes
+Const SENSOR_5TM         = FALSE    'Unique: Decagon Devices 5TM soil water content/temperature probes
 
-Const PROFILE_TDR315     = TRUE     'Unique: soil profile composed of Acclima TDR-315L probes
+Const PROFILE_TDR315     = TRUE     'Unique: soil profile composed of Acclima TDR-315L probes, if true, PROFILE_5TM must be false
+Const PROFILE_5TM        = FALSE    'Unique: soil profile composed of Decagon Devices 5TM probes, if true, PROFILE_TDR315 must be false
 
 Const SENSOR_034B        = TRUE     'Unique: MetOne 034B cup & vane wind set
 Const SENSOR_GPS16X      = TRUE     'Unique: Garmin GPS16x-HVS GPS receiver
@@ -127,8 +130,8 @@ Const SENSOR_TMPR_RH     = ((SENSOR_HMP155A) OR (SENSOR_HC2S3) OR (SENSOR_HMP45C
 Const SENSOR_Rn          = ((SENSOR_CNR4) OR (SENSOR_NR01) OR (SENSOR_NR_LITE))
 Const SENSOR_TE525x      = ((SENSOR_TE525) OR (SENSOR_TE525WS) OR (SENSOR_TE525MM) OR (SENSOR_TE525_wf))
 Const SENSOR_HFP         = ((SENSOR_HFP01) OR (SENSOR_HFP01SC))
-Const SENSOR_CS6XX       = ((SENSOR_CS616) OR (SENSOR_CS65X) OR (SENSOR_TDR315))
-Const SENSOR_PROFILE     = ((PROFILE_TDR315))
+Const SENSOR_CS6XX       = ((SENSOR_CS616) OR (SENSOR_CS65X) OR (SENSOR_TDR315) OR (SENSOR_5TM))
+Const SENSOR_PROFILE     = ((PROFILE_TDR315) OR (PROFILE_5TM))
 
 '***** Wiring Instruction ******
 '*** Beginning of EC100 (IRGASON or EC150 w/ or w/o CSAT3A sonic head) wiring ***
@@ -452,6 +455,22 @@ Const TDR315_SDI12_Address_2 = 2    'Unique: SDI address for TDR-315 #2
 '         SDI-12 ground #2 (white)
 '*** End of TDR-315 wiring ***
 #EndIf
+#If (SENSOR_5TM) Then
+
+Const fiveTM_SDI12_PORT        = 7     'Control port for SDI-12 data
+Const fiveTM_SDI12_Address_1   = 1     'Unique: SDI address for TDR-315 #1
+#If (NMBR_CS6xx = 2) Then
+Const fiveTM_SDI12_Address_2   = 2     'Unique: SDI address for TDR-315 #2
+#EndIf
+'*** Beginning of 5TM wiring ***
+'C5       SDI-12 data #1 (red)
+'         SDI-12 data #2 (red)
+'12V      SDI-12 power #1 (white)
+'         SDI-12 power #2 (white)
+'G        SDI-12 ground #1 (bare)
+'         SDI-12 ground #2 (bare)
+'*** End of 5TM wiring ***
+#EndIf
 #EndIf
 #If (SENSOR_PROFILE) Then
 
@@ -471,6 +490,21 @@ Const TDR315_SDI12_PORT    = 7      'Control port for SDI-12 data
 '         SDI-12 ground #2 (white)
 '*** End of TDR-315 wiring ***
 #EndIf
+#EndIf
+#If (PROFILE_5TM) Then
+
+Const fiveTM_SDI12_Address_P = 3      'Unique: first address in sequential series
+#If (NOT SENSOR_5TM) Then
+Const fiveTM_SDI12_PORT   = 7      'Control port for SDI-12 data
+#EndIf
+'*** Beginning of 5TM wiring ***
+'C5       SDI-12 data #1 (red)
+'         SDI-12 data #2 (red)
+'12V      SDI-12 power #1 (white)
+'         SDI-12 power #2 (white)
+'G        SDI-12 ground #1 (bare)
+'         SDI-12 ground #2 (bare)
+'*** End of 5TM wiring ***
 #EndIf
 #EndIf
 #If (SENSOR_TMPR_RH) Then
@@ -1982,6 +2016,33 @@ Units profile_tdr315_bulkEC = uS/cm
 Units profile_tdr315_poreEC = uS/cm
 '*** End of TDR315 profile constants and variables ***
 #EndIf
+#If (SENSOR_5TM) Then
+
+'*** Beginning of 5TM constants and variables ***
+'XXXX HACK use `soil_` prefix to mitigate starting numeral in model name
+Public soil_5TM_E(NMBR_CS6xx)     'soil permittivity, unitless
+Public soil_5TM_tmpr(NMBR_CS6xx)  'soil temperature, degC
+Public soil_5TM_wc(NMBR_CS6xx)    'volumetric water content, v/v
+Dim fiveTM_raw(3)    'holds response from sensor #x
+Units soil_5TM_E = unitless
+Units soil_5TM_tmpr = C
+Units soil_5TM_wc = frac_v_wtr
+'*** End of 5TM constants and variables ***
+#EndIf
+#If (PROFILE_5TM) Then
+
+'*** Beginning of 5TM profile constants and variables ***
+Public profile_5TM_E(NMBR_PROFILE)      'soil permittivity, unitless
+Public profile_5TM_tmpr(NMBR_PROFILE)   'soil temperature, degC
+Public profile_5TM_wc(NMBR_PROFILE)     'volumetric water content, v/v
+#If (NOT SENSOR_5TM) Then
+Dim fiveTM_raw(3)     'holds response from sensor #X
+#EndIf
+Units profile_5TM_E = unitless
+Units profile_5TM_tmpr = C
+Units profile_5TM_wc = frac_v_wtr
+'*** End of 5TM profile constants and variables ***
+#EndIf
 #If ((SENSOR_HFP) AND  (SENSOR_CS6XX) AND ((SENSOR_TCAV) OR (SENSOR_CS65X) OR (SENSOR_TDR315))) Then
 
 '*** Beginning of variables for calculation of soil heat flux at soil surface ***
@@ -2417,6 +2478,14 @@ DataTable (Flux, TRUE, FLUX_SIZE_CPU)
   Average (NMBR_CS6xx, tdr315_poreEC(1),   IEEE4, slowsequence_disable_flg)
   '*** End of TDR315 output data ***
   #EndIf
+  #If (SENSOR_5TM) Then
+
+  '*** Beginning of 5TM output data ***
+  Average (NMBR_CS6xx, soil_5TM_E(1),    IEEE4, slowsequence_disable_flg)
+  Average (NMBR_CS6xx, soil_5TM_tmpr(1), IEEE4, slowsequence_disable_flg)
+  Average (NMBR_CS6xx, soil_5TM_wc(1),   IEEE4, slowsequence_disable_flg)
+  '*** End of 5TM output data ***
+  #EndIf
   #If (SENSOR_HFP) Then
 
   '*** Beginning of HFP01 output data ***
@@ -2440,6 +2509,14 @@ DataTable (Flux, TRUE, FLUX_SIZE_CPU)
   Average (NMBR_PROFILE, profile_tdr315_poreEC(1),   IEEE4, slowsequence_disable_flg)
   '*** End of TDR315 profile output data ***
   #EndIf  
+  #If (PROFILE_5TM) Then
+  
+  '*** Beginning of 5TM output data ***
+  Average (NMBR_PROFILE, profile_5TM_E(1),    IEEE4, slowsequence_disable_flg)
+  Average (NMBR_PROFILE, profile_5TM_tmpr(1), IEEE4, slowsequence_disable_flg)
+  Average (NMBR_PROFILE, profile_5TM_wc(1),   IEEE4, slowsequence_disable_flg)
+  '*** End of 5TM output data ***
+  #EndIf
   '*** Footprint characteristics ****
   Sample (1, upwnd_dist_intrst, IEEE4)  'User-entered upwind distance of interest for the average upwind direction in this averaging interval
   Sample (1, FP_dist_intrst,    IEEE4)  'Percentage of measured scalar flux from upwind range of interest
@@ -4299,6 +4376,15 @@ Sub Separation_Lag_Lateral_Distances (wnd_dir, separation_x, separation_y, separ
   separation_lat_dis = -separation_x*SIN(wnd_dir) + separation_y*COS(wnd_dir)
 EndSub
 
+
+'*****************'
+'*** FUNCTIONS ***'
+'*****************'
+Function Topp_equation( dielectric )
+  Return 4.3e-6*dielectric^3 - 5.5e-4*dielectric^2 + 2.92e-2*dielectric - 5.3e-2
+EndFunction
+
+
 '********************'
 '*** MAIN PROGRAM ***'
 '*********************'
@@ -5617,10 +5703,10 @@ BeginProg
     
     #If ((SENSOR_HFP) AND (SENSOR_CS6XX) AND ((SENSOR_TCAV) OR (SENSOR_TDR315))) Then
 
-    AvgRun (soil_wtr_current(1), NMBR_CS6xx, tdr315_wc(1), NMBR_SOIL_T_WTR_DEL_SAMPLES)
+    AvgRun (soil_wtr_current(1), NMBR_CS6xx, (tdr315_wc(1)/100), NMBR_SOIL_T_WTR_DEL_SAMPLES) 'HINT scale % -> v/v
     
     If (soil_wtr_prev_Avg = NaN) Then
-      AvgSpa (soil_wtr_prev_Avg, NMBR_CS6xx, tdr315_wc(1))
+      AvgSpa (soil_wtr_prev_Avg, NMBR_CS6xx, (tdr315_wc(1)/100)) 'HINT scale % -> v/v
     EndIf
 
     #If ((SENSOR_TDR315) AND ( NOT SENSOR_TCAV)) Then
@@ -5632,6 +5718,39 @@ BeginProg
     #EndIf
     #EndIf
     '*** End of TDR-315 measurements ***
+    #EndIf
+    #If (SENSOR_5TM) Then
+    
+    '*** Beginning of 5TM measurements ***
+    SDI12Recorder(fiveTM_raw(1), fiveTM_SDI12_PORT, fiveTM_SDI12_Address_1, "M!", 1, 0)
+    soil_5TM_E(1)    = fiveTM_raw(1)
+    soil_5TM_tmpr(1) = fiveTM_raw(2)
+    soil_5TM_wc(1)   = Topp_equation(fiveTM_raw(3))
+    
+    #If (NMBR_CS6xx = 2) Then
+    SDI12Recorder(fiveTM_raw(1), fiveTM_SDI12_PORT, fiveTM_SDI12_Address_2, "M!", 1, 0)
+    soil_5TM_E(2)    = fiveTM_raw(1)
+    soil_5TM_tmpr(2) = fiveTM_raw(2)
+    soil_5TM_wc(2)   = Topp_equation(fiveTM_raw(3))
+    #EndIf
+    
+    #If ((SENSOR_HFP) AND (SENSOR_CS6XX) AND ((SENSOR_TCAV) OR (SENSOR_5TM))) Then
+
+    AvgRun (soil_wtr_current(1), NMBR_CS6xx, soil_5TM_wc(1), NMBR_SOIL_T_WTR_DEL_SAMPLES)
+    
+    If (soil_wtr_prev_Avg = NaN) Then
+      AvgSpa (soil_wtr_prev_Avg, NMBR_CS6xx, soil_5TM_wc(1))
+    EndIf
+
+    #If ((SENSOR_5TM) AND ( NOT SENSOR_TCAV)) Then
+    AvgRun (Tsoil_current(1), NMBR_CS6xx, soil_5TM_tmpr(1), NMBR_SOIL_T_WTR_DEL_SAMPLES)
+
+    If (Tsoil_prev_Avg = NaN) Then                         'As soon as program starts
+      AvgSpa (Tsoil_prev_Avg, NMBR_CS6xx, soil_5TM_tmpr(1))
+    EndIf
+    #EndIf
+    #EndIf
+    '*** End of 5TM measurements ***
     #EndIf
 
     #If (SENSOR_PROFILE) Then
@@ -5646,6 +5765,14 @@ BeginProg
       profile_tdr315_E(i_slow) = tdr315_raw(3)
       profile_tdr315_bulkEC(i_slow) = tdr315_raw(4)
       profile_tdr315_poreEC(i_slow) = tdr315_raw(5)
+      #EndIf
+      
+      #If (PROFILE_5TM) Then
+      'XXXX WARNING assumes no address above 9 (default: 6 sensors #3-8)
+      SDI12Recorder (fiveTM_raw(1), fiveTM_SDI12_PORT, fiveTM_SDI12_Address_P+i_slow-1, "M!", 1, 0)
+      profile_5TM_E(i_slow) = fiveTM_raw(1)
+      profile_5TM_tmpr(i_slow) = fiveTM_raw(2)
+      profile_5TM_wc(i_slow) = Topp_equation(fiveTM_raw(3))
       #EndIf
     Next i_slow
     '*** End of TDR-315 profile measurements ***

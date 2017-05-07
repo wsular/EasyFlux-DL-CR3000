@@ -64,8 +64,10 @@ Next release
     * Additional temperature/humidity probes (HC2S3, HMP45C)
     * Cup & vane wind set (MetOne 034B)
     * GPS receiver (GPS16X-HVS)
-    * Additional soil temperature/water content probe (Acclima TDR-315L)
-* Reintroduce vertical profile of soil tmpr/VWC probes (Acclima TDR-315L)
+    * Additional soil temperature/water content probes
+        * Acclima TDR-315L
+        * Decagon Devices 5TM
+* Reintroduce vertical profile of soil tmpr/VWC probes (TDR-315L or 5TM)
 
 
 
