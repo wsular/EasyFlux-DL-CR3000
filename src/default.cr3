@@ -123,6 +123,7 @@ Const PROFILE_5TM        = FALSE    'Unique: soil profile composed of Decagon De
 
 Const SENSOR_034B        = TRUE     'Unique: MetOne 034B cup & vane wind set
 Const SENSOR_GPS16X      = TRUE     'Unique: Garmin GPS16x-HVS GPS receiver
+Const SENSOR_DOOR        = TRUE     'Unique: reed switch enclosure door sensor
 
 
 'Composite boolean variables for variables above
@@ -594,6 +595,15 @@ Const MAX_CLOCK_DRIFT = 0  'max clock drift permitted before setting clock, in m
 'G       power ground (black)
 'G       power switch (yellow)
 '*** End of GPS16X wiring ***
+#EndIf
+#If (SENSOR_DOOR) Then
+
+Const DOOR_CTRL_INPUT = 8     'Control input port
+Const DOOR_SWITCH_POLARITY = False   'switch NO vs NC; change if reported door state is inverted
+'*** Beginning of door reed switch wiring ***
+'C8      one wire
+'+5V     the other wire
+'*** End of door switch wiring ***
 #EndIf
 
 'POWER IN
@@ -2168,6 +2178,12 @@ Units max_clock_change = ms
 Units nmbr_clock_change = occurrences
 '*** End of GPS receiver constants and variables ***
 #EndIf
+#If (SENSOR_DOOR) Then
+
+'*** Beginning of door switch constants and variables ***
+Public door_is_open
+'*** End of door switch constants and variables ***
+#EndIf
 
 '*** Beginning display menu ***
 DisplayMenu ("System Control", TRUE)
@@ -2745,6 +2761,9 @@ DataTable (Flux_Notes, TRUE, FLUX_SIZE_CPU)
   ' *** End of output atmospheric constants ***
 
   '*** Beginning of other output data ***
+  #If (SENSOR_DOOR) Then
+  Histogram(door_is_open, FP2, 0, 1, 001, 1, 0.5, 1.5)
+  #EndIf
   Average  (1, panel_tmpr, IEEE4, FALSE)
   Average  (1, batt_volt,  IEEE4, slowsequence_disable_flg)
   Totalize (1, n,          IEEE4, slowsequence_disable_flg)
@@ -5420,6 +5439,15 @@ BeginProg
 
     'Measure battery voltage.
     Battery (batt_volt)
+    
+    'Check state of enclosure door
+    #If (SENSOR_DOOR) Then
+    If (CheckPort(DOOR_CTRL_INPUT) = DOOR_SWITCH_POLARITY) Then
+      door_is_open = 1
+    Else
+      door_is_open = 0
+    EndIf
+    #EndIf
 
     #If (SENSOR_TMPR_RH) Then
 

@@ -42,6 +42,7 @@ Next release
 * Change PAR sensor back to LI190SB with Campbell Scientific-specific cabling
   (versus Licor direct-purchase LI190R unit)
 * Significant revisions to datalogger wiring scheme
+* Add door sensor switch
 
 ### Other changes
 
@@ -68,6 +69,7 @@ Next release
         * Acclima TDR-315L
         * Decagon Devices 5TM
 * Reintroduce vertical profile of soil tmpr/VWC probes (TDR-315L or 5TM)
+* Support for door sensor switch
 
 
 
