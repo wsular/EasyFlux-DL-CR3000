@@ -435,8 +435,8 @@ Const CS65X_SDI12_Address_2 = 2        'Unique: SDI address for CS655 #2
 #EndIf
 #If (SENSOR_TDR315) Then
 
-Const TDR315_SDI12_PORT      = 5    'Control port for SDI-12 data
-Const TDR315_SDI12_Address_1 = 0    'Unique: SDI address for TDR-315 #1
+Const TDR315_SDI12_PORT      = 7    'Control port for SDI-12 data
+Const TDR315_SDI12_Address_1 = 1    'Unique: SDI address for TDR-315 #1
 #If (NMBR_CS6xx = 2) Then
 Const TDR315_SDI12_Address_2 = 2    'Unique: SDI address for TDR-315 #2
 #EndIf
@@ -499,7 +499,7 @@ Const TE525_MULT = 0.1459     'Unique: multipler for TE525 or TE525MM w/ 8in fun
 #EndIf
 #If (SENSOR_034B) Then
 
-Const o34B_WD_ANALOG_INPUT = 1  'Single-ended analog input channel for 034B wind direction
+Const o34B_WD_ANALOG_INPUT = 23 'Single-ended analog input channel for 034B wind direction
 Const o34B_WD_EXCITATION = 1    'Voltage excitation channel for 034B wind direction
 Const o34B_WS_PULSE_INPUT = 1   'Pulse input channel for 034B wind speed
 
@@ -522,7 +522,7 @@ Const cupvane_azimuth = 0  'Unique: orientation of windset w.r.t. true north
 #EndIf
 #If (SENSOR_GPS16X) Then
 
-Const GPS16X_COM = Com4    'Serial port for GPS16X
+Const GPS16X_COM = Com2    'Serial port for GPS16X
 
 Const UTC_OFFSET = -8      'local time offset from UTC, in hours
 Const MAX_CLOCK_DRIFT = 0  'max clock drift permitted before setting clock, in msec
