@@ -40,6 +40,7 @@ Next release
 * Remove prototype NDVI/PRI sensors (Decagon Devices)
 * Change PAR sensor back to LI190SB with Campbell Scientific-specific cabling
   (versus Licor direct-purchase LI190R unit)
+* Significant revisions to datalogger wiring scheme
 
 ### Other changes
 
@@ -62,6 +63,7 @@ Next release
     * Additional temperature/humidity probes (HC2S3, HMP45C)
     * Cup & vane wind set (MetOne 034B)
     * GPS receiver (GPS16X-HVS)
+    * Additional soil temperature/water content probe (Acclima TDR-315L)
 
 
 
