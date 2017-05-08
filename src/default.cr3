@@ -134,6 +134,25 @@ Const SENSOR_HFP         = ((SENSOR_HFP01) OR (SENSOR_HFP01SC))
 Const SENSOR_CS6XX       = ((SENSOR_CS616) OR (SENSOR_CS65X) OR (SENSOR_TDR315) OR (SENSOR_5TM))
 Const SENSOR_PROFILE     = ((PROFILE_TDR315) OR (PROFILE_5TM))
 
+
+'*** Beginning field-configurable constants ***
+ConstTable
+#If (SENSOR_NR_LITE) Then
+Const NRLITE_SENS = 12
+#EndIf
+#If (SENSOR_LI190SB) Then
+Const QUANTUM_SENS = 5
+#EndIf
+#If (SENSOR_HFP) Then
+Const SHFP_1_SENS = 62
+Const SHFP_2_SENS = 62
+Const SHFP_3_SENS = 62
+Const SHFP_4_SENS = 62
+#EndIf
+EndConstTable
+'*** End of field-configurable constants ***
+
+
 '***** Wiring Instruction ******
 '*** Beginning of EC100 (IRGASON or EC150 w/ or w/o CSAT3A sonic head) wiring ***
 'SDM-C1  SDM Data (green)
@@ -152,18 +171,18 @@ Const SENSOR_PROFILE     = ((PROFILE_TDR315) OR (PROFILE_5TM))
 Const SHF_ANALOG_INPUT = 1  'Starting differential analog input channel.
 Const NMBR_SHFP = 2         'Unique: number of HFP01 or HFP01SC sensors to measure (Maximum is 4) .
 
-Data 1000/62                'Unique: multiplier for HFP01xx #1 (1000/sensitivity).
+Data 1000/SHFP_1_SENS                'Unique: multiplier for HFP01xx #1 (1000/sensitivity).
 #If (NMBR_SHFP >1) Then     'This conditional statement can avoid the confliction with Data statements for the numerical wTs transfer function from Dijk (2002)) if NMBR_SHFP < 2
 
-Data 1000/62                'Unique: multiplier for HFP01xx #2 (1000/sensitivity).
+Data 1000/SHFP_2_SENS                'Unique: multiplier for HFP01xx #2 (1000/sensitivity).
 #EndIf
 #If (NMBR_SHFP >2) Then     'This conditional statement can avoid the confliction with Data statements for the numerical wTs transfer function from Dijk (2002)) if NMBR_SHFP < 3
 
-Data 1000/62
+Data 1000/SHFP_3_SENS
 #EndIf                      'Unique: multiplier for HFP01xx #3 (1000/sensitivity).
 #If (NMBR_SHFP >3) Then     'This conditional statement can avoid the confliction with Data statements for the numerical wTs transfer function from Dijk (2002)) if NMBR_SHFP < 4
 
-Data 1000/62                'Unique: multiplier for HFP01xx #4 (1000/sensitivity).
+Data 1000/SHFP_4_SENS                'Unique: multiplier for HFP01xx #4 (1000/sensitivity).
 #EndIf
 
 #If (SENSOR_HFP01) Then
@@ -252,7 +271,7 @@ Const NR_ANALOG_INPUT = 10           'Starting differential analog input channel
 #EndIf
 #If (SENSOR_NR_LITE) Then
 
-Const NRLITE_CAL = 1000/16          'Unique: multiplier for NR Lite (1000/sensitivity).
+Const NRLITE_CAL = 1000/NRLITE_SENS          'Unique: multiplier for NR Lite (1000/sensitivity).
 '*** Beginning of NR Lite wiring ***
 '6H      Signal (white/red)
 '6L      Signal reference (green/blue)
@@ -352,7 +371,7 @@ Const PYRAN_OFFSET        = 0     'Unique: offset for LI200X [0 W/m^2] or CS300 
 
 Const QUANTUM_ANALOG_INPUT  = 11    'Differential analog input channel for quantum PAR sensor
 Const QUANTUM_VOLTAGE_RANGE = mV20  'Unique: measurement range of voltage
-Const QUANTUM_MULT          = 256   'Unique: multiplier (1000 C) for quantum PAR sensor.
+Const QUANTUM_MULT          = 1000/(QUANTUM_SENS*0.604)   'Unique: multiplier (1000 C) for quantum PAR sensor.
 Const QUANTUM_OFFSET        = 0     'Unique: offset for for quantum PAR sensor.
 
 '*** Beginning of quantum wiring ***
