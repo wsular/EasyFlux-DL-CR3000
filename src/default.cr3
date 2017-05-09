@@ -109,16 +109,16 @@ Const SENSOR_TE525WS     = TRUE     'Unique: TE525WS (8") rain gage
 Const SENSOR_TE525MM     = FALSE    'Unique: TE525MM (metric) rain gage
 Const SENSOR_TE525_wf    = FALSE    'Unique: TE525 or TE525MM rain gage with 8in funnel
 
-Const SENSOR_TCAV        = TRUE     'Unique: TCAV: type E thermocouple averaging soil temperature probes
-Const SENSOR_HFP01       = TRUE     'Unique: HFP01: soil heat flux plates, if true, SENSOR_HFP01SC must be set to FALSE
+Const SENSOR_TCAV        = FALSE     'Unique: TCAV: type E thermocouple averaging soil temperature probes
+Const SENSOR_HFP01       = FALSE     'Unique: HFP01: soil heat flux plates, if true, SENSOR_HFP01SC must be set to FALSE
 Const SENSOR_HFP01SC     = FALSE    'Unique: HFP01SC: self-calibrated soil heat flux plates, if true, SENSOR_HFP01 must be set to FALSE
 'Select at most 1 soil T/VWC probe:
 Const SENSOR_CS616       = FALSE    'Unique: CS616: water content reflectometers for volumetric soil moisture
 Const SENSOR_CS65X       = FALSE    'Unique: CS650 or CS655: water content reflectometers for volumetric soil moisture
-Const SENSOR_TDR315      = TRUE     'Unique: Acclima TDR-315L soil water content/temperature probes
+Const SENSOR_TDR315      = FALSE     'Unique: Acclima TDR-315L soil water content/temperature probes
 Const SENSOR_5TM         = FALSE    'Unique: Decagon Devices 5TM soil water content/temperature probes
 
-Const PROFILE_TDR315     = TRUE     'Unique: soil profile composed of Acclima TDR-315L probes, if true, PROFILE_5TM must be false
+Const PROFILE_TDR315     = FALSE     'Unique: soil profile composed of Acclima TDR-315L probes, if true, PROFILE_5TM must be false
 Const PROFILE_5TM        = FALSE    'Unique: soil profile composed of Decagon Devices 5TM probes, if true, PROFILE_TDR315 must be false
 
 Const SENSOR_034B        = TRUE     'Unique: MetOne 034B cup & vane wind set
