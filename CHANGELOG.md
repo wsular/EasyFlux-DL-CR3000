@@ -70,6 +70,7 @@ Next release
         * Decagon Devices 5TM
 * Reintroduce vertical profile of soil tmpr/VWC probes (TDR-315L or 5TM)
 * Support for door sensor switch
+* New default is to output single half-hour results table
 
 
 

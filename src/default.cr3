@@ -2298,7 +2298,7 @@ EndMenu
 '*** OUTPUT DATA TABLES ***'
 '**************************'
 
-Const ONE_FULL_TABLE = FALSE         'Unique: TRUE if all hourly or half-hourly data are stored in one table
+Const ONE_FULL_TABLE = TRUE         'Unique: TRUE if all hourly or half-hourly data are stored in one table
 '        FALSE if hourly or half-hourly variables for direct use are stored in Flux table and the variables for later reference are stored in Flux_Notes
 
 DataTable (Flux, TRUE, FLUX_SIZE_CPU)
