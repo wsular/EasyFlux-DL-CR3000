@@ -2164,7 +2164,7 @@ EndTable
 '*** Beginning of GPS receiver constants and variables ***
 Dim nmea_sentence(2) As String * 90
 
-Dim gps_data(15)
+Public gps_data(15)
 Alias gps_data(1) = latitude_deg            'Degrees latitude (+ = East; - = West)
 Alias gps_data(2) = latitude_min            'Decimal minutes latitude
 Alias gps_data(3) = longitude_deg           'Degress longitude (+ = East; - = West)
