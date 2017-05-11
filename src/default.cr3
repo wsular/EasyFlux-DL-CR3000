@@ -5185,6 +5185,7 @@ BeginProg
         GetRecord(old_work_out(1),old_cov_work,1)
         
         old_tau = SQR((old_Ux_Uz_cov*old_Ux_Uz_cov)+(old_Uy_Uz_cov*old_Uy_Uz_cov))
+        old_u_star = SQR(old_tau)
         old_L = -old_u_star^3*(old_Tc_Avg+273.15)/(0.4*9.8*old_Ts_Uz_cov)
         old_rho_d_mean = (old_amb_press_Avg/((old_Tc_Avg+273.15)*Rd))-(old_H2O_g_m3_Avg*MU_WPL)
         old_rho_a_mean = (old_rho_d_mean+old_H2O_g_m3_Avg)/1000
