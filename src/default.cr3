@@ -138,16 +138,16 @@ Const SENSOR_PROFILE     = ((PROFILE_TDR315) OR (PROFILE_5TM))
 '*** Beginning field-configurable constants ***
 ConstTable
 #If (SENSOR_NR_LITE) Then
-Const NRLITE_SENS = 12
+Const NRLITE_SENS = 12   'uV/W/m^2
 #EndIf
 #If (SENSOR_LI190SB) Then
-Const QUANTUM_SENS = 5
+Const QUANTUM_SENS = 5   'uA per 1000 umol/m^2/s
 #EndIf
 #If (SENSOR_HFP) Then
-Const SHFP_1_SENS = 62
-Const SHFP_2_SENS = 62
-Const SHFP_3_SENS = 62
-Const SHFP_4_SENS = 62
+Const SHFP_1_SENS = 62    'uV/W/m^2
+Const SHFP_2_SENS = 62    'uV/W/m^2
+Const SHFP_3_SENS = 62    'uV/W/m^2
+Const SHFP_4_SENS = 62    'uV/W/m^2
 #EndIf
 EndConstTable
 '*** End of field-configurable constants ***
