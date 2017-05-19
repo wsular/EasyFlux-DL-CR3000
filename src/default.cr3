@@ -773,7 +773,7 @@ Dim array_index               As Long        'Used for array index that must be 
 Dim n = 1                                    'Used for counting the number of samples
 Units n = samples
 
-Dim dly_data_out(7)                          'Array used to temporarily store the lagged record from the raw data table (hidden)
+Dim dly_data_out(8)                          'Array used to temporarily store the lagged record from the raw data table (hidden)
 
 Dim x_tmp                                    'Temporary variable used in intermediate calculations
 
@@ -1490,7 +1490,7 @@ Units  LE_qc_grade = Grade
 'Data table for delayed data from IRGA
 DataTable (delay_cs, TRUE, (OFFSET + MAX_LAG))
   TableHide
-  Sample (7,sonic_irga_raw(6),IEEE4)
+  Sample (8,sonic_irga_raw(6),IEEE4)
 EndTable
 
 ' 5-minute statistics
@@ -4873,7 +4873,7 @@ BeginProg
         array_index = MAX_LAG + 1 - i                                'Convert i = 2, 1, 0, -1, -2 to array_index = 1, 2, 3, 4, 5
 
         GetRecord (dly_data_out(1), delay_CS, (EC100_REC_BCK + i))
-        If (i = 0) Then Move (CO2, 7, dly_data_out(1), 7)            'CO2, H2O, diag_irga, amb_tmpr, amb_press, CO2_sig_strgth, H2O_sig_strgth
+        If (i = 0) Then Move (CO2, 8, dly_data_out(1), 8)            'CO2, H2O, diag_irga, amb_tmpr, amb_press, CO2_sig_strgth, H2O_sig_strgth
 
         'Load the arrays that hold the input data for the covariance instructions.
         Move (cov_array_CO2(array_index, 1), 1, dly_data_out(1),1)   'CO2
