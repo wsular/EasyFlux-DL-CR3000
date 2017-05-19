@@ -8,6 +8,10 @@ Revision history for our modified version of EasyFlux&reg; DL for CR3000.
 
 ## [Unreleased]
 
+### Added
+
+* Enable field editing of calibration sensitivity values for net radiometer
+  (NR-Lite2), quantum sensor (LI-190SB), and soil heat flux plate (HFP01)
 
 
 ----
