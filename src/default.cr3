@@ -2164,7 +2164,7 @@ EndTable
 '*** Beginning of GPS receiver constants and variables ***
 Dim nmea_sentence(2) As String * 90
 
-Dim gps_data(15)
+Public gps_data(15)
 Alias gps_data(1) = latitude_deg            'Degrees latitude (+ = East; - = West)
 Alias gps_data(2) = latitude_min            'Decimal minutes latitude
 Alias gps_data(3) = longitude_deg           'Degress longitude (+ = East; - = West)
@@ -2298,7 +2298,7 @@ EndMenu
 '*** OUTPUT DATA TABLES ***'
 '**************************'
 
-Const ONE_FULL_TABLE = FALSE         'Unique: TRUE if all hourly or half-hourly data are stored in one table
+Const ONE_FULL_TABLE = TRUE         'Unique: TRUE if all hourly or half-hourly data are stored in one table
 '        FALSE if hourly or half-hourly variables for direct use are stored in Flux table and the variables for later reference are stored in Flux_Notes
 
 DataTable (Flux, TRUE, FLUX_SIZE_CPU)
@@ -4574,7 +4574,7 @@ BeginProg
 
     '*** Beginning of CSI IRGA + sonic measurements ***
     'Get EC100 data.
-    EC100 (sonic_irga_raw(1), EC100_SDM_ADDR, 1)                                 '1st to 5th elements: Sonic data and 6th to 12rd elements: IRGA, air temperature, and pressure data
+    EC100 (sonic_irga_raw(1), EC100_SDM_ADDR, 2)                                 '1st to 5th elements: Sonic data and 6th to 12rd elements: IRGA, air temperature, and pressure data
     CallTable delay_3d                                                           'Sonic data
     CallTable delay_cs                                                           'IRGA, air temperature, and pressure data
 
@@ -5185,6 +5185,7 @@ BeginProg
         GetRecord(old_work_out(1),old_cov_work,1)
         
         old_tau = SQR((old_Ux_Uz_cov*old_Ux_Uz_cov)+(old_Uy_Uz_cov*old_Uy_Uz_cov))
+        old_u_star = SQR(old_tau)
         old_L = -old_u_star^3*(old_Tc_Avg+273.15)/(0.4*9.8*old_Ts_Uz_cov)
         old_rho_d_mean = (old_amb_press_Avg/((old_Tc_Avg+273.15)*Rd))-(old_H2O_g_m3_Avg*MU_WPL)
         old_rho_a_mean = (old_rho_d_mean+old_H2O_g_m3_Avg)/1000
