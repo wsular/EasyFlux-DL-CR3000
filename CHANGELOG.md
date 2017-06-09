@@ -1,6 +1,77 @@
 Change Log for GHG Monitoring Tower Program
 ===========================================
 
+Next release
+------------
+
+> This release requires operating system `CR3000.Std.31` or newer. 
+
+<p></p>
+
+> Previous telemetry integrations (email, ScadaBR) have been removed in this
+> version.
+
+<p></p>
+
+> The data processing core is now built upon [EasyFlux-DL by Campbell 
+> Scientific](www.campbellsci.com/easyflux-dl). This represents a substantial 
+> improvement in near real-time evaluation of carbon and energy fluxes.
+
+### Data Table Changes
+
+* Remove 5-min flux/met and soil data tables
+* Remove references to Picarro or Los Gatos instruments from `extra_info` table
+* Remove conditionally-included data table `tsdata_extra`
+* Fix issue which caused column `hfp_installed` in data table `site_info` to
+  always be false
+* New columns associated with alt. CO2 flux calculations (see *Other changes*)
+    * `CO2_hf` in `tsdata` is carbon dioxide density derived using high-freq
+      sonic temperature instead of thermistor temperature
+    * in `stats30` table:
+        * `Fc_hf_wpl` is CO2 flux with WPL corrections
+        * `CO2_hf_mg_m3_Avg` is mean CO2 density
+        * `CO2_hf_mg_m3_Std` is standard deviation of CO2 density
+
+### Instrumentation Changes
+
+* Change soil temp/moisture probes in vertical profile and in layer above soil
+  heat flux plates (8x Decagon Devices 5TM &rarr; 6x Acclima TDR-315L)
+* Change soil temperature probes in layer above soil heat flux plates 
+  (2x CSI model 109 probes &rarr; 1x CSI averaging thermocouple)
+* Remove prototype NDVI/PRI sensors (Decagon Devices)
+* Change PAR sensor back to LI190SB with Campbell Scientific-specific cabling
+  (versus Licor direct-purchase LI190R unit)
+* Significant revisions to datalogger wiring scheme
+* Add door sensor switch
+
+### Other changes
+
+* Remove scheduled reporting to ScadaBR instance
+* Remove automated email reporting
+* Improved settings menu provides guidance on units where appropriate
+* Produces two carbon dioxide flux estimates: the second value `Fc_hf_wpl` is
+  calculated using CO2 density derived using high-frequency sonic temperature
+  instead of slow-response thermistor temperature; for more information, refer
+  to http://dx.doi.org/10.1016/j.agrformet.2016.07.018
+
+### Changes w.r.t EasyFlux v1.0
+
+* Incorporate updates from EasyFlux v1.1 release
+    * FIX: correct transposed values in constant used for dewpoint calculations
+    * Non-substantive formatting changes
+* Increased instrumentation support
+    * Additional rain gage models (TE525, TE525WS, TE525 or TE525MM used with
+      8" funnel adapter)
+    * Additional temperature/humidity probes (HC2S3, HMP45C)
+    * Cup & vane wind set (MetOne 034B)
+    * GPS receiver (GPS16X-HVS)
+    * Additional soil temperature/water content probes
+        * Acclima TDR-315L
+        * Decagon Devices 5TM
+* Reintroduce vertical profile of soil tmpr/VWC probes (TDR-315L or 5TM)
+* Support for door sensor switch
+
+
 
 
 Initial commit
