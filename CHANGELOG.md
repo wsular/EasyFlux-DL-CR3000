@@ -7,31 +7,11 @@ Revision history for our modified version of EasyFlux&reg; DL for CR3000.
 
 ## [Unreleased]
 
-### Issues
-
-> Non-striken issues in past releases may still be relevant.
-
-### Added
-
-* Thirteen new columns in data table `Flux`, after column `cupvane_WD_csi_Std`,
-  representing data from the soil heat flux plate and associated TDR-series soil
-  probes
-
-
-## [ProgSig 36802] 2017-08-14
-
-### Issues
-
-* (Unconfirmed) check whether `RH_Avg` in new table only updates every half-hour
-
-### Added
-
 * New data table `LTAR_CORe` represents 15min meteorology data submission
   format for sites in the USDA Long-Term Agroecosystem Research (LTAR) program
     * Covers both Phase 1 & Phase 2 measurements
     * Anticipates other variables of interest
 
-----
 
 ## [ProgSig 20626] 2017-06-02
 
@@ -45,11 +25,6 @@ Revision history for our modified version of EasyFlux&reg; DL for CR3000.
 
 * Enable field editing of calibration sensitivity values for net radiometer
   (NR-Lite2), quantum sensor (LI-190SB), and soil heat flux plate (HFP01).
-* New columns in data table `Flux`:
-    * after `Rn_meas`, new column `NRLITE_SENS` is unique sensor calibration
-      for net radiometer
-    * after `PAR_density`, new column `QUANTUM_SENS` is unique sensor calibration
-      for quantum PAR sensor
 
 ----
 
@@ -82,9 +57,9 @@ This revision is based on *EasyFlux DL for CR3000 v.1.1* by Campbell Scientific.
 
 ### Issues
 
-* ~~Secondary CO<sub>2</sub> flux calculations are incomplete due to missing
+* Secondary CO<sub>2</sub> flux calculations are incomplete due to missing
   alternate CO<sub>2</sub> density value (wrong command sent to `EC100()`
-  instruction), and intermediate array being under sized.~~
+  instruction), and intermediate array being under sized.
 * Column `old_CO2_hf_mg_m3_Avg` is missing units in table *Flux*.
 * Changes to wiring locations prevent certain inactive sensors from being used.
 * Comments on GPS receiver integration incorrectly refer to ports C7/C8 instead
@@ -92,8 +67,8 @@ This revision is based on *EasyFlux DL for CR3000 v.1.1* by Campbell Scientific.
 * UTC offset used by `GPS()` instruction is a hard-coded constant.
 * Value of "0" used for `MaxTimeDiff` parameter in `GPS()` instruction may
   cause skipped scans in older hardware/firmware.
-* ~~Unique calibration constants cannot be edited via *ConstTable* because 
-  program is too large to edit in datalogger memory.~~
+* Unique calibration constants cannot be edited via *ConstTable* because 
+  program is too large to edit in datalogger memory.
 
 ### Fixed
 

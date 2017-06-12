@@ -85,6 +85,9 @@
 PipeLineMode
 AngleDegrees  'Angles are in degrees throughout the program
 
+Const LTAR_CORE_TABLE  = TRUE       'Unique: TRUE if producing 15-min LTAR Common Observatory Repository (CORe) data table
+'        FALSE if no LTAR data table              online: https://ltar.nal.usda.gov/
+
 '*** SENSORS ****
 Const SENSOR_IRGASON     = FALSE    'Unique: IRGASON, if TRUE, SENSOR_CSAT3AEC150 must be set to FALSE
 Const SENSOR_CSAT3AEC150 = TRUE     'Unique: CSAT3A + EC150, if TRUE, SENSOR_IRGASON must be set to FALSE.
@@ -1627,7 +1630,7 @@ Alias old_work_out(7) = old_Ux_Uz_cov
 Alias old_work_out(8) = old_Uy_Uy_cov
 Alias old_work_out(9) = old_Uy_Uz_cov
 Alias old_work_out(10) = old_Uz_Std
-Alias old_work_out(11) = old_CO2_mg_m3_Std 			   'results of 3 covariances, 12 #s
+Alias old_work_out(11) = old_CO2_mg_m3_Std         'results of 3 covariances, 12 #s
 Alias old_work_out(12) = old_CO2_Ux_cov
 Alias old_work_out(13) = old_CO2_Uy_cov
 Alias old_work_out(14) = old_CO2_Uz_cov
@@ -2197,6 +2200,45 @@ Units nmbr_clock_change = occurrences
 Public door_is_open
 '*** End of door switch constants and variables ***
 #EndIf
+
+'*** Beginning of LTAR related constants and variables ***
+#If (LTAR_CORE_TABLE) Then
+Dim LTAR_wnd_dir_compass
+Dim LTAR_VPD_air
+Units LTAR_wnd_dir_compass = degrees
+Units LTAR_VPD_air = kPa
+
+Dim stats_out_ltar(6)
+Alias stats_out_ltar(1) = LTAR_wnd_spd
+Alias stats_out_ltar(2) = LTAR_rslt_wnd_spd
+Alias stats_out_ltar(3) = LTAR_wnd_dir_sonic
+Alias stats_out_ltar(4) = LTAR_std_wnd_dir
+Alias stats_out_ltar(5) = LTAR_e_sat
+Alias stats_out_ltar(6) = LTAR_e
+Units LTAR_wnd_spd = m/s
+Units LTAR_rslt_wnd_spd = m/s
+Units LTAR_wnd_dir_sonic = degrees
+Units LTAR_std_wnd_dir = degrees
+Units LTAR_e_sat = kPa
+Units LTAR_e = kPa
+
+'15 minute wind data for LTAR Core
+DataTable (stats_LTAR,TRUE,1)
+  TableHide
+  DataInterval (0,15,Min,1)
+  WindVector (1, Uy, Ux, IEEE4, sonic_disable_f, 0, 1, 2)
+  #If (SENSOR_IRGASON) Then
+  Average (1, e_sat,     IEEE4, (irga_disable_f OR sonic_disable_f OR H2O_bad_rng_sig_array(MAX_LAG +1)))
+  Average (1, e,         IEEE4, (irga_disable_f OR sonic_disable_f OR H2O_bad_rng_sig_array(MAX_LAG +1)))
+  #EndIf
+  #If (NOT SENSOR_IRGASON) Then
+  Average (1, e_sat,     IEEE4, (irga_disable_f OR irga_amb_tmpr_f OR H2O_bad_rng_sig_array(MAX_LAG +1)))
+  Average (1, e,         IEEE4, (irga_disable_f OR irga_amb_tmpr_f OR H2O_bad_rng_sig_array(MAX_LAG +1)))
+  #EndIf
+EndTable
+#EndIf
+'*** End of LTAR related variables and constants ***
+
 
 '*** Beginning display menu ***
 DisplayMenu ("System Control", TRUE)
@@ -2865,6 +2907,51 @@ DataTable (Time_Series, TRUE, -1)
   #EndIf
 
 EndTable
+
+'LTAR Common Observatory Repository (CORe) data <https://ltar.nal.usda.gov/>
+#If (LTAR_CORE_TABLE) Then
+DataTable (LTAR_Met, TRUE, -1)
+  DataInterval (0,15,Min,10)
+  TableFile ("CRD:"&Status.SerialNumber(1,1)&".LTAR_Met_", 64, -1, 0, NMBR_DAY_FLUX_CRD, Day, 0, 0)
+  
+  '*** Beginning of Phase 1 measurements ***
+  Average (1, amb_tmpr,  IEEE4, irga_amb_tmpr_f)  'AirTemperature (Degrees C)
+  Sample  (1, LTAR_rslt_wnd_spd,  IEEE4)          'WindSpeed (m/s)
+    FieldNames ("rslt_wnd_spd")
+  Sample  (1, LTAR_wnd_dir_compass,   FP2)        'WindDirection (Degrees) [w.r.t. True north]
+    FieldNames("wnd_dir_compass")
+  #If (SENSOR_IRGASON) Then                       'RelativeHumidity (percent)
+  Average (1, RH,         IEEE4, (irga_disable_f OR sonic_disable_f OR H2O_bad_rng_sig_array(MAX_LAG +1)))
+  #EndIf
+  #If (NOT SENSOR_IRGASON) Then
+  Average (1, RH,         IEEE4, (irga_disable_f OR irga_amb_tmpr_f OR H2O_bad_rng_sig_array(MAX_LAG +1)))
+  #EndIf
+  #If (SENSOR_TE525x) Then
+  Totalize(1, Precipitation,      FP2, False)     'Precipitation (mm) [liquid precip]
+  #EndIf
+  '*** End of Phase 1 measurements ***
+
+  '*** Beginning of Phase 2 measurements ***
+  Average (1, amb_press, IEEE4, irga_amb_press_f) 'AirPressure (kPa)
+  #If (SENSOR_LI190SB) Then
+  Average (1, PAR_density,      IEEE4, slowsequence_disable_flg) 'PAR (umol/m^2/s)
+  #EndIf
+  'omit ShortWaveIn/LongWaveIn because no sensors
+  Average (1, batt_volt,        IEEE4, slowsequence_disable_flg) 'BatteryVoltage (Volts DC)
+  Average (1, panel_tmpr,       IEEE4, False)                    'LoggerTemperature (Degrees C)
+  '*** End of Phase 2 measurements ***
+
+  '*** Beginning of anticipated future measurements ***
+  Sample  (1, LTAR_std_wnd_dir, FP2)                
+    FieldNames("std_wnd_dir")
+  Sample  (1, LTAR_VPD_air, IEEE4)
+    FieldNames("VPD_air")
+  #If (SENSOR_NR_LITE) Then
+  Average (1, Rn_meas, IEEE4, slowsequence_disable_flg)
+  #EndIf
+  '*** End of anticipated future measurements ***
+EndTable
+#EndIf
 
 '*******************'
 '*** SUBROUTINEs ***'
@@ -4663,7 +4750,7 @@ BeginProg
       ' Call Table for 5-minute and 30-minute table
       CallTable comp_cov_3d_5min                   'for Steady State Test
       CallTable comp_cov_3d
-
+    
       ' The data for Steady State Test (SST)
       If (comp_cov_3d_5min.Output(1, 1)) Then
         GetRecord (u_Avg_SST, comp_cov_3d_5min, 1)
@@ -5187,8 +5274,21 @@ BeginProg
       EndIf
       '*** End of IRGA processing ***
       
+      
+      '*** Beginning of LTAR CORe table processing ***
+      #If (LTAR_CORE_TABLE) Then
+      CallTable stats_LTAR
+      If (stats_LTAR.Output(1, 1)) Then
+        GetRecord (stats_out_ltar, stats_LTAR, 1)
+        'Rotate the sonic head RHC system so the negative x-axis points north
+        LTAR_wnd_dir_compass = (360 + sonic_azimuth - LTAR_wnd_dir_sonic) MOD 360
+        LTAR_VPD_air = LTAR_e_sat - LTAR_e 'water vapor pressure deficit
+      EndIf
+      #EndIf
+      '*** End of LTAR CORe table processing ***
 
-      '*** Beginning of old eddy-covariance processing
+
+      '*** Beginning of old eddy-covariance processing ***
       #If (SENSOR_CSAT3AEC150) Then
       cov_array_sonic(1,1) = Ts
       Move (cov_array_sonic(1,2),3,Ux,3)
@@ -5240,7 +5340,7 @@ BeginProg
         old_Hc = old_rho_a_mean*old_Cp*old_Tc_Uz_cov
       EndIf
       #EndIf
-      '*** End of old eddy-covariance processing
+      '*** End of old eddy-covariance processing ***
 
 
       #If (SENSOR_TMPR_RH) Then
@@ -5457,9 +5557,14 @@ BeginProg
 
       'Save averaged and calculated data.
       CallTable Flux
-
+    
       #If (NOT ONE_FULL_TABLE) Then
       CallTable Flux_Notes
+      #EndIf
+
+      'Save 15 Minute Meteorology Data for LTAR CORE
+      #If (LTAR_CORE_TABLE) Then
+      CallTable LTAR_Met
       #EndIf
 
       slowsequence_disable_flg = TRUE
