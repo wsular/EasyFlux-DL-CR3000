@@ -3574,7 +3574,9 @@ Sub FootprintCharacteristics_KormannMeixner (Ustar, height_aerodynamic, Stabilit
 
   'Composite variables
   Dim r_KM                     'Shape factor (r_KM =2 + m_KM - n_KM) in footprint of Kormann and Meixner (2001)
-  Dim Xi                       'wnd_const/(k*r_KM^2) where k is von Kerman constant (0.41)
+  Dim Phi_c                    'Phi_c is the thermal stratification as a function of stability [see eq 1.32 in Kaimal & Finnigan 1994 and eq. 34 in Kormann and Meixner (2001)].
+  Dim kp                       'Constant in power-law profile of the eddy diffusivity (k*u_star*height_aerodynamic^(1.0 - n_KM)/Phi_c) 
+  Dim Xi                       'wnd_const/(kp*r_KM^2) where k is von Kerman constant (0.41)
   Dim Mu                       '(m_KM + 1)/r_KM
   Dim Gamma_Mu                 'Gamma function of Mu
   Dim xgz                      '((Xi^Mu)*(height_aerodynamic^(m_KM +1)))/Gamma_Mu
@@ -3596,80 +3598,82 @@ Sub FootprintCharacteristics_KormannMeixner (Ustar, height_aerodynamic, Stabilit
   Dim FP_M3                    'footprint at x = x_L + 0.75*(x_R - x_L)
   Dim FP_R                     'footprint at x = x_R
 
-  Dim Interval_count           'Used to calculate interval number after FP_90pct_range calculated, but before Upwnd_dist reaches
-  Dim J As Long                'Used for index of iteration. The upcase letter J is used to keep the editor's auto-correct feature
-  'From changing the case of J in units as lowcase (e.g. J/s m^2) throughout the program.
+  Dim J As Long                'Used for index of iteration. The uppercase letter J is used to keep the editor's auto-correct feature
+  'From changing the case of J in units as lowercase (e.g. J/s m^2) throughout the program.
   
 
    If ((Ustar <> NaN) AND (Stability <> NaN) AND (U <> NaN)) Then
+
   'Calculate the exponent of vertical profile of horizontal wind and the exponent of vertical profile of eddy diffusivity
-  
   If (Stability > 0) Then
     'Similarity functions are defined in a range of z/L from -2 to 2 (pages 28, 41~43, Kaimal & Finnigan 1994). Extened to +/-4 as shown in Fig 5.23 in Stull (1988)
    Select Case Stability 
      Case Is <= 4.0    
-       m_KM = (Ustar/(k*U))*(1 + 5*Stability)         'Exponent of vertical profile of horizontal wind
-       n_KM = 1/(1 + 5*Stability)                     'Exponent of vertical profile of eddy diffusivity
-     
-     Case Is > 4
-       m_KM = (Ustar/(k*U))*(1 + 5*4)                 'Exponent of vertical profile of horizontal wind
-       n_KM = 1/(1 + 5*4)                             'Exponent of vertical profile of eddy diffusivity
+       m_KM = (Ustar/(k*U))*(1.0 + 5.0*Stability)           'Exponent of vertical profile of horizontal wind
+       n_KM = 1.0/(1.0 + 5.0*Stability)                     'Exponent of vertical profile of eddy diffusivity
+       Phi_c = 1.0 + 5.0 * Stability                        'Thermal stratification as a function of stability 
+     Case Is > 4.0
+       m_KM = (Ustar/(k*U))*(1 + 5.0*4.0)                   'Exponent of vertical profile of horizontal wind
+       n_KM = 1.0/(1.0 + 5*4)                               'Exponent of vertical profile of eddy diffusivity
+       Phi_c = 1.0 + 5.0 * 4.0                              'Thermal stratification as a function of stability 
    EndSelect
   Else
     Select Case Stability
      Case Is >= -4.0  
-       m_KM = (Ustar/(k*U))/((1 - 16*Stability)^0.25) 'Exponent of vertical profile of horizontal wind
-       n_KM = (1-24*Stability)/(1 - 16*Stability)     'Exponent of vertical profile of eddy diffusivity
-   
+       m_KM = (Ustar/(k*U))/((1.0 - 16.0*Stability)^0.25)   'Exponent of vertical profile of horizontal wind
+       n_KM = (1.0 - 24.0*Stability)/(1.0 - 16.0*Stability) 'Exponent of vertical profile of eddy diffusivity
+       Phi_c = 1.0 /SQR(1.0 - 16.0*Stability)               'Thermal stratification as a function of stability 
      Case Is < -4.0
-       m_KM = (Ustar/(k*U))/((1 - 16*(-4))^0.25)      'Exponent of vertical profile of horizontal wind
-       n_KM = (1-24*(-4))/(1 - 16*(-4))               'Exponent of vertical profile of eddy diffusivity
+       m_KM = (Ustar/(k*U))/((1.0 - 16.0*(-4.0))^0.25)      'Exponent of vertical profile of horizontal wind
+       n_KM = (1.0 - 24.0*(-4.0))/(1.0 - 16.0*(-4.0))       'Exponent of vertical profile of eddy diffusivity
+       Phi_c = 1.0 /SQR(1.0 + 16.0*4)                       'Thermal stratification as a function of stability 
     EndSelect
   EndIf
 
   'Calculate the wind constant in the vertical profile of horizontal wind
-  wnd_const = U/(height_aerodynamic^m_KM)        'Wind constant
+  wnd_const = U/(height_aerodynamic^m_KM)                   'Wind constant
 
   'Calculate the composite variables
-  r_KM = 2 + m_KM - n_KM                        'Shape factor
-
-  Xi = wnd_const/(k*r_KM*r_KM)
+  r_KM = 2.0 + m_KM - n_KM                                  'Shape factor
+  kp = k * u_star * height_aerodynamic^(1.0 - n_KM)/Phi_c   'from eqs (11) and (32) in Kormann and Meixner (2001)
+  Xi = wnd_const/(kp*r_KM*r_KM)
   Mu = (m_KM + 1)/r_KM
 
-  Gamma_Mu = SQR(2*PI/Mu)*(((Mu + 1/(12*Mu - 0.1/Mu))/EXP(1))^Mu)    'Nemes (2007)
+  Gamma_Mu = SQR(2.0*PI/Mu)*(((Mu + 1.0/(12.0*Mu - 0.1/Mu))/EXP(1.0))^Mu)    'Nemes (2007)
 
   xgz = ((Xi^Mu)*(height_aerodynamic^(m_KM +1)))/Gamma_Mu
   xz  = Xi*(height_aerodynamic^r_KM)
 
   'Turnning and inflection points
-  x_max          = xz/(Mu + 1)                   'Upwind location of source/sink that contributes most to the measured flux
-  x_inflection_L = x_max*(1 - 1/SQR(Mu + 2))     'x at the left footprint inflection point
-  x_inflection_R = x_max*(1 + 1/SQR(Mu + 2))     'x at the right footprint inflection point
+  x_max          = xz/(Mu + 1.0)                             'Upwind location of source/sink that contributes most to the measured flux
+  x_inflection_L = x_max*(1.0 - 1.0/SQR(Mu + 2.0))           'x at the left footprint inflection point
+  x_inflection_R = x_max*(1.0 + 1.0/SQR(Mu + 2.0))           'x at the right footprint inflection point
 
   'Reset variables
-  FP_cumulative  = 0
-  FP_win_range   = 0
-  FP_40pct_range = 0
-  FP_55pct_range = 0
-  FP_90pct_range = 0
+  FP_cumulative  = 0.0
+  FP_win_range   = 0.0
+  FP_40pct_range = 0.0
+  FP_55pct_range = 0.0
+  FP_90pct_range = 0.0
 
   '***Calculate footprint characteristics: FP_win_range, FP_40pct_range, FP_55pct_range, and FP_90pct_range
   ' Use five numerical integration segments to calculate the footprint characteristics
   ' 1st: starting segment from 0 (+ Delt-->0)  to the left footprint inflection point (x_inflection_L)
   ' 2nd: the left footprint inflection point to the footprint maximum (x_max)
-  ' 3rd: the footprint maximum to the right footptint inflection point (x_inflection_R) then further to [x_inflection_R + (x_inflection_R - x_max)] or until cumulative footprint reaches 90%
-  ' 4th: from x > [x_inflection_R + (x_inflection_R - x_max)] or x at culumutive footprint > 90% and then until the distance of interest is reached, 
-  '      but limited x_max + 200*height_aerodynamic (x_200z).
-  ' 5th: If upwind range of interest has not been reached, this segment is integrated from x at FP_90 = 90% (x_90)
-  '      or x_max + 200*height_aerodynamic (x_200z) to upwind distance of interest, but limited to x_90 (or x_200z) + 100*height_aerodynamic.  
+  ' 3rd: the footprint maximum to the right footptint inflection point (x_inflection_R) then further to 
+  '      [x_inflection_R + (x_inflection_R - x_max)] or until cumulative footprint reaches 90% whichever is reached first.
+  ' 4th: from x > [x_inflection_R + (x_inflection_R - x_max)] or x at culumutive footprint > 90% if reached and then until the distance of interest or 
+  '      FP_90pct_range is reached if not reached in 3rd segment but limited further x_max + x_max + 1000*height_aerodynamic.
+  ' 5th: If upwind range of interest or FP_90pct_range has not been reached, this segment is integrated from x at FP_90 = 90% (x_90)
+  '      or the 4th segment end point to upwind distance of interest, but limited to integration further + 1000*height_aerodynamic.  
 
   ' Use a high resolution of integration intervals for the first three segments 
   '     a lower resolution for the 4th and 5th segments, but high precision numerical method of Boole's rule
 
    '1st numerical integration segment: Upwind range within the left inflection point
-    x_R  = 0                                                        'Reset
+    x_R  = 0.0                                                      'Reset
     Integration_interval = x_inflection_L/NMBR_INT_INTERV_SEGMENT   'In numerical integration, use x at the left footprint inflection point as the ending boundary of this segment
-    FP_R = 0                                                        'Reset
+    FP_R = 0.0                                                      'Reset
 
     'Upwind range within the left inflection point
     For J = 1 To NMBR_INT_INTERV_SEGMENT
@@ -3692,15 +3696,17 @@ Sub FootprintCharacteristics_KormannMeixner (Ustar, height_aerodynamic, Stabilit
       EndIf
 
       'Find the 40% footprint distance
-      If (FP_cumulative >= 0.4) AND (FP_40pct_range = 0) Then
+      If (FP_cumulative >= 0.4) AND (FP_40pct_range = 0.0) Then
         FP_40pct_range = x_R - Integration_interval*(FP_cumulative - 0.4)/(FP_cumulative - FP_cumulative_prev)
       EndIf
 
     Next J
 
     '2nd numerical integration segment: Upwind range from the left footprint inflection point to the maximum footprint
-    Integration_interval = (x_max - x_inflection_L)/NMBR_INT_INTERV_SEGMENT   'In this segment, use x at the left inflection point as the starting boundary and x_max as the ending boundary
+    'In this segment, use x at the left inflection point as the starting boundary and x_max as the ending boundary
 
+    Integration_interval = (x_max - x_inflection_L)/NMBR_INT_INTERV_SEGMENT   
+    
     For J = 1 To NMBR_INT_INTERV_SEGMENT
       x_L = x_R
       x_R = x_R + Integration_interval
@@ -3710,14 +3716,14 @@ Sub FootprintCharacteristics_KormannMeixner (Ustar, height_aerodynamic, Stabilit
       FP_L = FP_R
 
       'Footprint value at the right boundary of integral interval
-      FP_R = xgz*EXP(-xz/x_R)/(x_R^(Mu + 1))
+      FP_R = xgz*EXP(-xz/x_R)/(x_R^(Mu + 1.0))
 
       'The trapezoidal rule used for an individual interval to cumulate the footprint
-      FP_cumulative += Integration_interval*(FP_L + FP_R)/2
+      FP_cumulative += Integration_interval*(FP_L + FP_R)/2.0
 
       'Find the footprint w/in the range of interest
       If ((x_L < upwnd_dist) AND (x_R >= upwnd_dist)) Then
-        FP_win_range = 100*(FP_cumulative_prev + (FP_cumulative - FP_cumulative_prev)*(upwnd_dist - x_L)/Integration_interval)
+        FP_win_range = 100.0*(FP_cumulative_prev + (FP_cumulative - FP_cumulative_prev)*(upwnd_dist - x_L)/Integration_interval)
       EndIf
 
       'Find the 40% footprint distance
@@ -3732,8 +3738,10 @@ Sub FootprintCharacteristics_KormannMeixner (Ustar, height_aerodynamic, Stabilit
 
     Next J
 
-    '3rd numerical integration segment: Upwind range from the maximum footprint to the right footprint inflection point and further to [x_inflection_R + (x_inflection_R -x_max)] or until 90% footprint is reached
-    Integration_interval = (x_inflection_R - x_max)/NMBR_INT_INTERV_SEGMENT   'In this segment, use x_max as the starting boundary and x at the right inflection point as the boundary of middle interval
+    '3rd numerical integration segment: Upwind range from the maximum footprint to the right footprint inflection point and further to
+    ' [x_inflection_R + (x_inflection_R -x_max)] or until 90% footprint is reached
+    ' In this segment, use x_max as the starting boundary and x at the right inflection point as the boundary of middle interval
+    Integration_interval = (x_inflection_R - x_max)/NMBR_INT_INTERV_SEGMENT   
 
     'Upwind range within two times of range from x_max to the right inflection point
     For J = 1 To 2*NMBR_INT_INTERV_SEGMENT                                    'The fine resolution of integration is used even beyong x_inflection_R to [x_inflection_R + (x_inflection_R -x_max)] or until 90% footprint is reached
@@ -3745,14 +3753,14 @@ Sub FootprintCharacteristics_KormannMeixner (Ustar, height_aerodynamic, Stabilit
       FP_L = FP_R
 
       'Footprint value at the right boundary of integration interval
-      FP_R = xgz*EXP(-xz/x_R)/(x_R^(Mu + 1))
+      FP_R = xgz*EXP(-xz/x_R)/(x_R^(Mu + 1.0))
 
       'The trapezoidal rule used for an individual interval to cumulate footprint
-      FP_cumulative += Integration_interval*(FP_L + FP_R)/2
+      FP_cumulative += Integration_interval*(FP_L + FP_R)/2.0
 
       'Find the footprint w/in the range of interest
       If ((x_L < upwnd_dist) AND (x_R >= upwnd_dist)) Then
-        FP_win_range = 100*(FP_cumulative_prev + (FP_cumulative - FP_cumulative_prev)*(upwnd_dist - x_L)/Integration_interval)
+        FP_win_range = 100.0*(FP_cumulative_prev + (FP_cumulative - FP_cumulative_prev)*(upwnd_dist - x_L)/Integration_interval)
       EndIf
 
       'Find the 40% footprint distance
@@ -3773,12 +3781,12 @@ Sub FootprintCharacteristics_KormannMeixner (Ustar, height_aerodynamic, Stabilit
 
     Next J
 
-    '4th numerical integration segment: x > [x_inflection_R + (x_inflection_R - x_max)] or culumutive footprint > 90%
+    '4th numerical integration segment: x > [x_inflection_R + (x_inflection_R - x_max)] or culumutive footprint < 90%
     ' Use lower intergration resolution, but the more accurate numerical integration method of Boole's rule
-    Integration_interval = 4*height_aerodynamic
+    Integration_interval = 10*height_aerodynamic
 
-    'If upwind range of 90% footprint is not reached. Continue, but limited to x_max + 200*height_aerodynamic
-    While ((FP_cumulative < 0.9) AND (x_R - x_max < 200*height_aerodynamic))
+    'If upwind range of 90% footprint is not reached. Continue, but limited to x_max + 1000*height_aerodynamic
+    While ((FP_cumulative < 0.9) AND (x_R - x_max < 1000*height_aerodynamic))
       x_L = x_R
       x_R = x_R + Integration_interval
       FP_cumulative_prev = FP_cumulative
@@ -3788,19 +3796,19 @@ Sub FootprintCharacteristics_KormannMeixner (Ustar, height_aerodynamic, Stabilit
       FP_L = FP_R
 
       'Footprint value at the 1st, 2nd, and 3rd quarter integration interval
-      FP_M1 = xgz*EXP(-xz/(x_L + 0.25*Integration_interval))/((x_L + 0.25*Integration_interval)^(Mu + 1))
-      FP_M2 = xgz*EXP(-xz/(x_L + 0.50*Integration_interval))/((x_L + 0.50*Integration_interval)^(Mu + 1))
-      FP_M3 = xgz*EXP(-xz/(x_L + 0.75*Integration_interval))/((x_L + 0.75*Integration_interval)^(Mu + 1))
+      FP_M1 = xgz*EXP(-xz/(x_L + 0.25*Integration_interval))/((x_L + 0.25*Integration_interval)^(Mu + 1.0))
+      FP_M2 = xgz*EXP(-xz/(x_L + 0.50*Integration_interval))/((x_L + 0.50*Integration_interval)^(Mu + 1.0))
+      FP_M3 = xgz*EXP(-xz/(x_L + 0.75*Integration_interval))/((x_L + 0.75*Integration_interval)^(Mu + 1.0))
 
       'Footprint value at the right boundary of an integration interval
-      FP_R = xgz*EXP(-xz/x_R)/(x_R^(Mu + 1))
+      FP_R = xgz*EXP(-xz/x_R)/(x_R^(Mu + 1.0))
 
       'The Boole's rule used for an individual interval to cumulate the footprint
-      FP_cumulative += Integration_interval*(7*FP_L + 32*FP_M1 + 12*FP_M2 + 32*FP_M3 +7*FP_R)/90
+      FP_cumulative += Integration_interval*(7.0*FP_L + 32.0*FP_M1 + 12.0*FP_M2 + 32.0*FP_M3 +7.0*FP_R)/90.0
 
       'Find the footprint w/in the range of interest
       If ((x_L < upwnd_dist) AND (x_R >= upwnd_dist)) Then
-        FP_win_range = 100*(FP_cumulative_prev + (FP_cumulative - FP_cumulative_prev)*(upwnd_dist - x_L)/Integration_interval)
+        FP_win_range = 100.0*(FP_cumulative_prev + (FP_cumulative - FP_cumulative_prev)*(upwnd_dist - x_L)/Integration_interval)
       EndIf
 
       'Find the 40% footprint distance
@@ -3820,25 +3828,16 @@ Sub FootprintCharacteristics_KormannMeixner (Ustar, height_aerodynamic, Stabilit
       FP_90pct_range = x_R - Integration_interval*(FP_cumulative - 0.9)/(FP_cumulative - FP_cumulative_prev)
     EndIf
 
-    ' Assign FP_90pct_range as NaN if culmulative footprint can not reach 0.9 within x_max + 200*height_aerodynamic
-    If ((FP_cumulative < 0.90) AND (FP_90pct_range = 0)) Then
-      FP_90pct_range = NaN
-    EndIf
-
     ' 5th numerical integration segment:
-    ' If upwind range of interest has not been reached, this segment is integrated
-    ' from x at FP_90 = 90% (x_90) or x_max + 200*height_aerodynamic (x_200z)(if FP_90 is not reached) to upwind distance of interest, 
-    ' but limited to x_90 (or x_200z) + 100*height_aerodynamic. 
+    ' If upwind range of interest or FP_90pct has not been reached, this segment is integrated
+    ' from x at FP_90 = 90% (x_90) or the 4th segment end if upwind distance of interest or FP_90 is not reached, 
+    ' but limited to 1000*height_aerodynamic further. 
     
-    If (x_R < upwnd_dist) Then
+    If ((x_R < upwnd_dist) OR (FP_90pct_range = 0)) Then
 
-      'Control the integration w/in 25 iterations after above integrations
-      If ((upwnd_dist - x_R) < (100*height_aerodynamic)) Then
+        Integration_interval = 2*Integration_interval              'Rescale integration interval
 
-        Interval_count       = INT((upwnd_dist - x_R)/Integration_interval)
-        Integration_interval = (upwnd_dist - x_R)/Interval_count              'Rescale integration interval
-
-        For J = 1 To  Interval_count                                           '100*height_aerodynamic after above integration, the cumulative footprint is enough
+        For J = 1 To 50                                            '100*height_aerodynamic after above integration, the cumulative footprint is enough
           x_L = x_R
           x_R = x_R + Integration_interval
           FP_cumulative_prev = FP_cumulative
@@ -3848,32 +3847,44 @@ Sub FootprintCharacteristics_KormannMeixner (Ustar, height_aerodynamic, Stabilit
           FP_L = FP_R
 
           'Footprint value at the right boudary of the 1st, 2nd, and 3rd quarter integration interval
-          FP_M1 = xgz*EXP(-xz/(x_L + 0.25*Integration_interval))/((x_L + 0.25*Integration_interval)^(Mu + 1))
-          FP_M2 = xgz*EXP(-xz/(x_L + 0.50*Integration_interval))/((x_L + 0.50*Integration_interval)^(Mu + 1))
-          FP_M3 = xgz*EXP(-xz/(x_L + 0.75*Integration_interval))/((x_L + 0.75*Integration_interval)^(Mu + 1))
+          FP_M1 = xgz*EXP(-xz/(x_L + 0.25*Integration_interval))/((x_L + 0.25*Integration_interval)^(Mu + 1.0))
+          FP_M2 = xgz*EXP(-xz/(x_L + 0.50*Integration_interval))/((x_L + 0.50*Integration_interval)^(Mu + 1.0))
+          FP_M3 = xgz*EXP(-xz/(x_L + 0.75*Integration_interval))/((x_L + 0.75*Integration_interval)^(Mu + 1.0))
 
           'Footprint value at the right boundary of integration interval
-          FP_R = xgz*EXP(-xz/x_R)/(x_R^(Mu + 1))
+          FP_R = xgz*EXP(-xz/x_R)/(x_R^(Mu + 1.0))
 
-          FP_cumulative += Integration_interval*(7*FP_L + 32*FP_M1 + 12*FP_M2 + 32*FP_M3 +7*FP_R)/90
+          FP_cumulative += Integration_interval*(7.0*FP_L + 32.0*FP_M1 + 12.0*FP_M2 + 32.0*FP_M3 +7.0*FP_R)/90.0
           
-          'Try FP FP_90pct_range again in case that FP_90pct_range is not resolved
-          If ((FP_cumulative >= 0.9) AND (FP_90pct_range = NaN)) Then
+          'Find the footprint w/in the range of interest
+          If ((x_L < upwnd_dist) AND (x_R >= upwnd_dist)) Then
+            FP_win_range = 100.0*(FP_cumulative_prev + (FP_cumulative - FP_cumulative_prev)*(upwnd_dist - x_L)/Integration_interval)
+          EndIf
+          
+          'Try FP_90pct_range again in case that FP_90pct_range is not resolved
+          If ((FP_cumulative >= 0.9) AND (FP_90pct_range = 0)) Then
             FP_90pct_range = x_R - Integration_interval*(FP_cumulative - 0.9)/(FP_cumulative - FP_cumulative_prev)
           EndIf
-
+          
+          If ((x_R >= upwnd_dist) AND (FP_90pct_range > x_max)) Then
+              ExitFor 
+          EndIf
+ 
         Next J
 
+        If (FP_win_range = 0) Then
         Select Case FP_cumulative
         Case Is < 1.00
-          FP_win_range = 100*FP_cumulative
-        Case Is >=1
-          FP_win_range = 99
+          FP_win_range = 100.00*FP_cumulative
+        Case Is >=1.00
+          FP_win_range = 99.00
         EndSelect
-
-      Else
-        FP_win_range = 99
-      EndIf
+        EndIf
+        
+        'Assign FP_90pct_range as current x_R if cumulative footprint can not reach 0.9 within the integration range above. 
+          If ((FP_cumulative >= 0.9) AND (FP_90pct_range = 0)) Then
+            FP_90pct_range = x_R 
+          EndIf
 
     EndIf
 
