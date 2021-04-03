@@ -99,11 +99,57 @@ table is described on a different sheet in this spreadsheet:
 * [Microsoft Excel&reg; format (.xlsx)](doc/data_tables.xlsx)
 * *(sorry, PDF format is not provided)*
 
+### LTAR Common Observatory Repository (CORe)
+
+This table is designed to facilitate data reduction and submission of meteorology data to
+the USDA LTAR Common Observatory Repository (CORe) database. For more information, refer to 
+[Common Observatory Meteorology Data Concept of Operations.pdf](https://www.ars.usda.gov/ARSUserFiles/np211/LTAR%20Meteorology%20Concept%20of%20Operations%20FINAL%20150929.pdf).
+
+* Data table name: `LTAR_Met`
+* Record interval: 15 minutes, aligned to midnight
+
+Download a field name lookup table in JSON format from [here](ltar_core_lut.json):
+
+````
+{
+"amb_tmpr_Avg"       : "AirTemperature",
+"rlst_wnd_spd"       : "WindSpeed",
+"wnd_dir_compass"    : "WindDirection",
+"RH_Avg"             : "RelativeHumidity",
+"Precipitation_Tot"  : "Precipitation",
+"amb_press_Avg"      : "AirPressure",
+"PAR_density_Avg"    : "PAR",
+"batt_volt_Avg"      : "BatteryVoltage",
+"panel_tmpr_Avg"     : "LoggerTemperature",
+"std_wnd_dir"        : null,
+"VPD_air"            : null,
+"Rn_meas_Avg"        : null
+}
+````
+
+| Table Field Name  | Units  | Agg type | LTAR Phase | LTAR CORe variable | LTAR CORe units | Description |
+|-------------------|-----------|-------|:-----:|-------------------|-----------|-------------------------|
+| amb_tmpr_Avg      | C         | mean  |   1   | AirTemperature    | Degrees C | ambient air temperature |
+| rlst_wnd_spd      | m/s       | mean  |   1   | WindSpeed         | m/s       | resultant wind speed |
+| wnd_dir_compass   | degrees   | mean  |   1   | WindDirection     | Degrees   | resultant wind direction |
+| RH_Avg            | %         | mean  |   1   | RelativeHumidity  | percent   | relative humidity |
+| Precipitation_Tot | mm        | total |   1   | Precipitation     | mm        | liquid precipitation |
+| amb_press_Avg     | kPa       | mean  |   2   | AirPressure       | kPa       | barometric pressure
+| PAR_density_Avg   | umol/(s m^2) | mean |   2   | PAR        | umol m^-2 s^-2 | photosynthetically active radiation (PAR) |
+| batt_volt_Avg     | V         | mean  |   2   | BatteryVoltage    | Volts DC  | system input voltage |
+| panel_tmpr_Avg    | C         | mean  |   2   | LoggerTemperature | Degrees C | logger panel temperature |
+| std_wnd_dir       | degrees   | stdev |   -   | - | - | standard deviation of wind direction |
+| VPD_air           | kPa       | mean  |   -   | - | - | vapor pressure deficit |
+| Rn_meas_Avg       | W/m^2     | mean  |   -   | - | - | net radiation |
+
 
 ## References
 
 * Acclima. *User Manual TDR-315/315L/310S.* January, 2017 Rev. 2. Online:
   <http://www.acclima.com/poc7/prodlit/TDR-315%20User%20Manual.pdf>
+* Campbell, J., Goodrich, D., Heilman, P., & Sadler, J. *LTAR Common Observatory
+  Meteorology Data Concept of Operations.* Version 2.0. September 29, 2015.
+  Online: <https://www.ars.usda.gov/ARSUserFiles/np211/LTAR%20Meteorology%20Concept%20of%20Operations%20FINAL%20150929.pdf>
 * Campbell Scientific. *CR3000 Micrologger Operator's Manual.* Rev 4/15.
   Online: <http://s.campbellsci.com/documents/us/manuals/cr3000.pdf>
 * Campbell Scientific. *CSAT3 Three Dimensional Sonic Anemometer Instruction

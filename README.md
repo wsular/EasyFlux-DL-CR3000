@@ -90,10 +90,6 @@ in a separate and unrelated branch history.
 For additional details, refer to the [official user guide](https://www.campbellsci.com/easyflux-dl#documents_)
 as well as files in the [`/doc`](/doc) folder.
 
-### LTAR Common Observatory Repository (CORe)
-
-Details [here](doc/ltar_core_table.md). Also available: 
-[JSON field name lookup table](src/ltar_core_lut.json)
 
 ## License
 

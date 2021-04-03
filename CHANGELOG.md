@@ -7,11 +7,20 @@ Revision history for our modified version of EasyFlux&reg; DL for CR3000.
 
 ## [Unreleased]
 
+### Issues
+
+* (Unconfirmed) check whether `RH_Avg` in new table only updates every half-hour
+
+### Added
+
 * New data table `LTAR_CORe` represents 15min meteorology data submission
   format for sites in the USDA Long-Term Agroecosystem Research (LTAR) program
     * Covers both Phase 1 & Phase 2 measurements
     * Anticipates other variables of interest
 
+
+
+----
 
 ## [ProgSig 20626] 2017-06-02
 
