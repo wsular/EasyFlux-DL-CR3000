@@ -28,13 +28,13 @@
 * Cup and vane wind set ([034B](https://www.campbellsci.com/034b))
 * GPS receiver ([GPS16X-HVS](https://www.campbellsci.com/gps16x-hvs))
 * Door switch sensor (magnetic reed switch, NO recommended)
-
-### Future Sensors
-
 * Averaging thermocouple ([TCAV](https://www.campbellsci.com/tcav-l) x1)
 * Water content reflectometer, for heat storage term 
   ([TDR-315L](http://www.acclima.com) x2)
-* Soil heat flux plates ([HFP01](https://www.campbellsci.com/hfp01) x2)
+* Soil heat flux plates ([HFP01](https://www.campbellsci.com/hfp01) x1)
+
+### Future Sensors
+
 * Water content reflectometer, for vertical profiling (TDR-315L x6)
 
 
