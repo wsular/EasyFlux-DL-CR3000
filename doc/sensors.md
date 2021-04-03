@@ -32,9 +32,6 @@
 * Water content reflectometer, for heat storage term 
   ([TDR-315L](http://www.acclima.com) x2)
 * Soil heat flux plates ([HFP01](https://www.campbellsci.com/hfp01) x1)
-
-### Future Sensors
-
 * Water content reflectometer, for vertical profiling (TDR-315L x6)
 
 

@@ -42,7 +42,7 @@
 'wnd    wind
 'wtr    water
 'hfp01xx HFP01 or HFP01SC soil heat flux plate sensor
-
+'This is a change
 '*** SIGN CONVENTION
 ' Positive fluxes away from the ground surface and negative towards the ground surface.
 
@@ -112,16 +112,16 @@ Const SENSOR_TE525WS     = TRUE     'Unique: TE525WS (8") rain gage
 Const SENSOR_TE525MM     = FALSE    'Unique: TE525MM (metric) rain gage
 Const SENSOR_TE525_wf    = FALSE    'Unique: TE525 or TE525MM rain gage with 8in funnel
 
-Const SENSOR_TCAV        = FALSE     'Unique: TCAV: type E thermocouple averaging soil temperature probes
-Const SENSOR_HFP01       = FALSE     'Unique: HFP01: soil heat flux plates, if true, SENSOR_HFP01SC must be set to FALSE
+Const SENSOR_TCAV        = TRUE     'Unique: TCAV: type E thermocouple averaging soil temperature probes
+Const SENSOR_HFP01       = TRUE     'Unique: HFP01: soil heat flux plates, if true, SENSOR_HFP01SC must be set to FALSE
 Const SENSOR_HFP01SC     = FALSE    'Unique: HFP01SC: self-calibrated soil heat flux plates, if true, SENSOR_HFP01 must be set to FALSE
 'Select at most 1 soil T/VWC probe:
 Const SENSOR_CS616       = FALSE    'Unique: CS616: water content reflectometers for volumetric soil moisture
 Const SENSOR_CS65X       = FALSE    'Unique: CS650 or CS655: water content reflectometers for volumetric soil moisture
-Const SENSOR_TDR315      = FALSE     'Unique: Acclima TDR-315L soil water content/temperature probes
+Const SENSOR_TDR315      = TRUE     'Unique: Acclima TDR-315L soil water content/temperature probes
 Const SENSOR_5TM         = FALSE    'Unique: Decagon Devices 5TM soil water content/temperature probes
 
-Const PROFILE_TDR315     = FALSE     'Unique: soil profile composed of Acclima TDR-315L probes, if true, PROFILE_5TM must be false
+Const PROFILE_TDR315     = TRUE     'Unique: soil profile composed of Acclima TDR-315L probes, if true, PROFILE_5TM must be false
 Const PROFILE_5TM        = FALSE    'Unique: soil profile composed of Decagon Devices 5TM probes, if true, PROFILE_TDR315 must be false
 
 Const SENSOR_034B        = TRUE     'Unique: MetOne 034B cup & vane wind set
@@ -129,8 +129,8 @@ Const SENSOR_GPS16X      = TRUE     'Unique: Garmin GPS16x-HVS GPS receiver
 Const SENSOR_DOOR        = TRUE     'Unique: reed switch enclosure door sensor
 
 'adjust to reflect reality
-Const NMBR_SHFP = 2         'Unique: number of HFP01 or HFP01SC sensors to measure (Maximum is 4) .
-Const NMBR_CS6xx = 1        'Unique: number of CS616, CS650, CS655, TDR-315 or 5TM sensors (Maximum is 2)
+Const NMBR_SHFP = 1         'Unique: number of HFP01 or HFP01SC sensors to measure (Maximum is 4) .
+Const NMBR_CS6xx = 2        'Unique: number of CS616, CS650, CS655, TDR-315 or 5TM sensors (Maximum is 2)
 Const NMBR_PROFILE = 6      'Unique: number of T/VWC probes (TDR-315 or 5TM) in profile (Maximum is 6)
 
 'Composite boolean variables for variables above
@@ -186,11 +186,11 @@ Data 1000/SHFP_4_SENS                'Unique: multiplier for HFP01xx #4 (1000/se
 '*** Beginning of HFP01 wiring ***
 '1H      Signal #1 (white)
 '1L      Signal reference #1 (green)
-'gnd     Shield #1 (clear)
+'gnd     Shield #1 (black)
 
 '2H     Signal #2 (white)
 '2L     Signal reference #2 (green)
-'gnd    Shield #2 (clear)
+'gnd    Shield #2 (black)
 
 '3H     Signal #3 (white)
 '3L     Signal reference #3 (green)
@@ -404,8 +404,8 @@ Const TCAV_ANALOG_INPUT = 5          'Staring differential analog input channel 
 Const NMBR_TCAV         = 1          'Unique: number of TCAV (Maximum is 2)
 
 '*** Beginning of TCAV wiring ***
-'11H     Signal #1 (purple)
-'11L     Signal reference #1 (red)
+'5H     Signal #1 (purple)
+'5L     Signal reference #1 (red)
 'gnd     Shield #1 (clear)
 
 '12H     Signal #2 (purple)
