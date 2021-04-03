@@ -1,0 +1,14 @@
+{
+"amb_tmpr_Avg"       : "AirTemperature",
+"rlst_wnd_spd"       : "WindSpeed",
+"wnd_dir_compass"    : "WindDirection",
+"RH_Avg"             : "RelativeHumidity",
+"Precipitation_Tot"  : "Precipitation",
+"amb_press_Avg"      : "AirPressure",
+"PAR_density_Avg"    : "PAR",
+"batt_volt_Avg"      : "BatteryVoltage",
+"panel_tmpr_Avg"     : "LoggerTemperature",
+"std_wnd_dir"        : null,
+"VPD_air"            : null,
+"Rn_meas_Avg"        : null
+}
