@@ -6,9 +6,18 @@ Revision history for our modified version of EasyFlux&reg; DL for CR3000.
 > *Supported sections: Security, Issues, Fixed, Added, Changed, Deprecated, Removed*
 
 
-## [Unreleased]
+## [ProgSig 20626] 2017-06-02
 
+### Fixed
 
+* Unique calibration constants can now be edited in the field by changing the
+  file `CPU:constants.cr3` and reloading the program. The include file can be
+  edited locally on the datalogger keypad, or remotely via support software.
+
+### Added
+
+* Enable field editing of calibration sensitivity values for net radiometer
+  (NR-Lite2), quantum sensor (LI-190SB), and soil heat flux plate (HFP01).
 
 ----
 
@@ -43,7 +52,7 @@ This revision is based on *EasyFlux DL for CR3000 v.1.1* by Campbell Scientific.
 
 * Secondary CO<sub>2</sub> flux calculations are incomplete due to missing
   alternate CO<sub>2</sub> density value (wrong command sent to `EC100()`
-  instruction).
+  instruction), and intermediate array being under sized.
 * Column `old_CO2_hf_mg_m3_Avg` is missing units in table *Flux*.
 * Changes to wiring locations prevent certain inactive sensors from being used.
 * Comments on GPS receiver integration incorrectly refer to ports C7/C8 instead

@@ -136,20 +136,9 @@ Const SENSOR_PROFILE     = ((PROFILE_TDR315) OR (PROFILE_5TM))
 
 
 '*** Beginning field-configurable constants ***
-ConstTable
-#If (SENSOR_NR_LITE) Then
-Const NRLITE_SENS = 12
+#If (SENSOR_NR_LITE OR SENSOR_LI190SB OR SENSOR_HFP) Then
+  Include("CPU:constants.cr3")
 #EndIf
-#If (SENSOR_LI190SB) Then
-Const QUANTUM_SENS = 5
-#EndIf
-#If (SENSOR_HFP) Then
-Const SHFP_1_SENS = 62
-Const SHFP_2_SENS = 62
-Const SHFP_3_SENS = 62
-Const SHFP_4_SENS = 62
-#EndIf
-EndConstTable
 '*** End of field-configurable constants ***
 
 
@@ -773,7 +762,7 @@ Dim array_index               As Long        'Used for array index that must be 
 Dim n = 1                                    'Used for counting the number of samples
 Units n = samples
 
-Dim dly_data_out(7)                          'Array used to temporarily store the lagged record from the raw data table (hidden)
+Dim dly_data_out(8)                          'Array used to temporarily store the lagged record from the raw data table (hidden)
 
 Dim x_tmp                                    'Temporary variable used in intermediate calculations
 
@@ -1490,7 +1479,7 @@ Units  LE_qc_grade = Grade
 'Data table for delayed data from IRGA
 DataTable (delay_cs, TRUE, (OFFSET + MAX_LAG))
   TableHide
-  Sample (7,sonic_irga_raw(6),IEEE4)
+  Sample (8,sonic_irga_raw(6),IEEE4)
 EndTable
 
 ' 5-minute statistics
@@ -2439,7 +2428,12 @@ DataTable (Flux, TRUE, FLUX_SIZE_CPU)
   #EndIf
   #If (SENSOR_NR_LITE) Then
 
+  '*** Beginning of net radiometer output data ***
   Average (1, Rn_meas, IEEE4, slowsequence_disable_flg)
+  Sample (1, NRLITE_SENS, FP2)
+    FieldNames("NRLITE_SENS")
+    Units NRLITE_SENS = uV/W/m^2
+  '*** End of net radiometer output data ***
   #EndIf
   #If ((SENSOR_NR01) OR (SENSOR_CNR4)) Then
 
@@ -2458,6 +2452,9 @@ DataTable (Flux, TRUE, FLUX_SIZE_CPU)
 
   '*** Beginning of LI190SB output data ***
   Average  (1, PAR_density, IEEE4, slowsequence_disable_flg)
+  Sample (1, QUANTUM_SENS, FP2)
+    FieldNames("QUANTUM_SENS")
+    Units QUANTUM_SENS = uA/mmol/m^2/s
   '*** End of LI190SB output data ***
   #EndIf
   #If (SENSOR_SI111) Then
@@ -2525,7 +2522,27 @@ DataTable (Flux, TRUE, FLUX_SIZE_CPU)
 
   '*** Beginning of HFP01 output data ***
   Sample (NMBR_SHFP, shf_plate_avg(1), IEEE4)                                    'Heat flux through a soil heat flux plate
-  '*** End of HFP01 output data ***
+  #If (NOT SENSOR_HFP01SC) Then
+  Sample (1, SHFP_1_SENS, FP2)
+    FieldNames("SHFP_1_SENS")
+    Units SHFP_1_SENS = uv/W/m^2
+  #If (NMBR_SHFP > 1) Then
+  Sample (1, SHFP_2_SENS, FP2)
+    FieldNames("SHFP_2_SENS")
+    Units SHFP_2_SENS = uv/W/m^2
+  #EndIf
+  #If (NMBR_SHFP > 2) Then
+  Sample (1, SHFP_3_SENS, FP2)
+    FieldNames("SHFP_3_SENS")
+    Units SHFP_3_SENS = uv/W/m^2
+  #EndIf
+  #If (NMBR_SHFP > 3) Then
+  Sample (1, SHFP_4_SENS, FP2)
+    FieldNames("SHFP_4_SENS")
+    Units SHFP_4_SENS = uv/W/m^2
+  #EndIf
+  #EndIf
+  '*** End of HFP01 output data ***  
   #EndIf
   #If (SENSOR_HFP01SC) Then
 
@@ -4873,7 +4890,7 @@ BeginProg
         array_index = MAX_LAG + 1 - i                                'Convert i = 2, 1, 0, -1, -2 to array_index = 1, 2, 3, 4, 5
 
         GetRecord (dly_data_out(1), delay_CS, (EC100_REC_BCK + i))
-        If (i = 0) Then Move (CO2, 7, dly_data_out(1), 7)            'CO2, H2O, diag_irga, amb_tmpr, amb_press, CO2_sig_strgth, H2O_sig_strgth
+        If (i = 0) Then Move (CO2, 8, dly_data_out(1), 8)            'CO2, H2O, diag_irga, amb_tmpr, amb_press, CO2_sig_strgth, H2O_sig_strgth
 
         'Load the arrays that hold the input data for the covariance instructions.
         Move (cov_array_CO2(array_index, 1), 1, dly_data_out(1),1)   'CO2

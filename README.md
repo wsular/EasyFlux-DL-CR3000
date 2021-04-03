@@ -79,9 +79,11 @@ in a separate and unrelated branch history.
 ### Quick Setup
 
 1. Connect the datalogger to power and sensors as described in relevant manuals.
+3. Update the unique calibration values in `src/constants.cr3` and upload to
+   to the datalogger.
 2. Modify the program file (`src/default.cr3`) as needed to:
     * enable or disable sensors 
-    * update constants, such as UTC offset and unique sensor calibration values
+    * update other constants, such as UTC offset
 3. Upload the program file to the datalogger.
 4. Update station variables, as necessary.
 
