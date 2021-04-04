@@ -7,6 +7,36 @@ Revision history for our modified version of EasyFlux&reg; DL for CR3000.
 >
 > *Supported sections: Security, Issues, Fixed, Added, Changed, Deprecated, Removed*
 
+## [Unreleased]
+
+### Fixed
+
+* Issue with calling the soil profile probes according to deployment log. All
+  TDR-31X and 5TM soil probe measurements are moved into a separate scan with
+  1-minute interval, versus the original slow sequence scan with 5-sec interval.
+
+### Added
+
+* New data table `LTAR_Met_1Minute` has all columns in table `LTAR_Met` except
+  for soil profile measurements
+
+### Changed
+
+
+* Data table `Flux`
+    * all TDR-related column names are changed from `tdr315` &rarr;`tdr31X`
+    * half as many columns for heat flux (non-profile) TDR probes 
+* Data table `LTAR_Met`
+    * Fourty new columns for e/e_sat, TDR soil profile and heat flux measurements
+
+### Removed
+
+* Reduce soil probes supporting heat flux plate measurements from 2 &rarr; 1.
+* Thirteen columns prefixed "`old_`" are removed from the beginning of data 
+  table `Flux`. The pre-EasyFlux computations are no longer performed, though
+  time series table `Time_Series` still contains alternate CO2 density value.
+
+----
 
 ## [ProgSig 28444] 2017-11-03
 
@@ -14,7 +44,6 @@ Revision history for our modified version of EasyFlux&reg; DL for CR3000.
 
 * Thirty new columns in data table `Flux` are inserted after `SHFP_1_SENS`
   containing measurements from six soil profile TDR sensors
-
 
 ----
 
