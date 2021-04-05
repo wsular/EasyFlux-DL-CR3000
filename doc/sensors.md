@@ -30,7 +30,7 @@
 * Door switch sensor (magnetic reed switch, NO recommended)
 * Averaging thermocouple ([TCAV](https://www.campbellsci.com/tcav-l) x1)
 * Water content reflectometer, for heat storage term 
-  ([TDR-315L](http://www.acclima.com) x2)
+  ([TDR-315L](http://www.acclima.com) x1)
 * Soil heat flux plates ([HFP01](https://www.campbellsci.com/hfp01) x1)
 * Water content reflectometer, for vertical profiling (TDR-315L x6)
 
@@ -124,20 +124,8 @@ Download a field name lookup table in JSON format from [here](ltar_core_lut.json
 }
 ````
 
-| Table Field Name  | Units  | Agg type | LTAR Phase | LTAR CORe variable | LTAR CORe units | Description |
-|-------------------|-----------|-------|:-----:|-------------------|-----------|-------------------------|
-| amb_tmpr_Avg      | C         | mean  |   1   | AirTemperature    | Degrees C | ambient air temperature |
-| rlst_wnd_spd      | m/s       | mean  |   1   | WindSpeed         | m/s       | resultant wind speed |
-| wnd_dir_compass   | degrees   | mean  |   1   | WindDirection     | Degrees   | resultant wind direction |
-| RH_Avg            | %         | mean  |   1   | RelativeHumidity  | percent   | relative humidity |
-| Precipitation_Tot | mm        | total |   1   | Precipitation     | mm        | liquid precipitation |
-| amb_press_Avg     | kPa       | mean  |   2   | AirPressure       | kPa       | barometric pressure
-| PAR_density_Avg   | umol/(s m^2) | mean |   2   | PAR        | umol m^-2 s^-2 | photosynthetically active radiation (PAR) |
-| batt_volt_Avg     | V         | mean  |   2   | BatteryVoltage    | Volts DC  | system input voltage |
-| panel_tmpr_Avg    | C         | mean  |   2   | LoggerTemperature | Degrees C | logger panel temperature |
-| std_wnd_dir       | degrees   | stdev |   -   | - | - | standard deviation of wind direction |
-| VPD_air           | kPa       | mean  |   -   | - | - | vapor pressure deficit |
-| Rn_meas_Avg       | W/m^2     | mean  |   -   | - | - | net radiation |
+See the data output spreadsheet (above) for complete table details. Note there
+is also a 1-min data table with most of the same measurements.
 
 
 ## References

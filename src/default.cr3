@@ -87,6 +87,7 @@ AngleDegrees  'Angles are in degrees throughout the program
 
 Const LTAR_CORE_TABLE  = TRUE       'Unique: TRUE if producing 15-min LTAR Common Observatory Repository (CORe) data table
 '        FALSE if no LTAR data table              online: https://ltar.nal.usda.gov/
+Const LTAR_CORE_TABLE_1Minute = TRUE
 
 '*** SENSORS ****
 Const SENSOR_IRGASON     = FALSE    'Unique: IRGASON, if TRUE, SENSOR_CSAT3AEC150 must be set to FALSE
@@ -118,11 +119,11 @@ Const SENSOR_HFP01SC     = FALSE    'Unique: HFP01SC: self-calibrated soil heat 
 'Select at most 1 soil T/VWC probe:
 Const SENSOR_CS616       = FALSE    'Unique: CS616: water content reflectometers for volumetric soil moisture
 Const SENSOR_CS65X       = FALSE    'Unique: CS650 or CS655: water content reflectometers for volumetric soil moisture
-Const SENSOR_TDR315      = TRUE     'Unique: Acclima TDR-315L soil water content/temperature probes
+Const SENSOR_TDR31X      = TRUE     'Unique: Acclima TDR-315L soil water content/temperature probes
 Const SENSOR_5TM         = FALSE    'Unique: Decagon Devices 5TM soil water content/temperature probes
 
-Const PROFILE_TDR315     = TRUE     'Unique: soil profile composed of Acclima TDR-315L probes, if true, PROFILE_5TM must be false
-Const PROFILE_5TM        = FALSE    'Unique: soil profile composed of Decagon Devices 5TM probes, if true, PROFILE_TDR315 must be false
+Const PROFILE_TDR31X     = TRUE     'Unique: soil profile composed of Acclima TDR-315L probes, if true, PROFILE_5TM must be false
+Const PROFILE_5TM        = FALSE    'Unique: soil profile composed of Decagon Devices 5TM probes, if true, PROFILE_TDR31X must be false
 
 Const SENSOR_034B        = TRUE     'Unique: MetOne 034B cup & vane wind set
 Const SENSOR_GPS16X      = TRUE     'Unique: Garmin GPS16x-HVS GPS receiver
@@ -130,7 +131,7 @@ Const SENSOR_DOOR        = TRUE     'Unique: reed switch enclosure door sensor
 
 'adjust to reflect reality
 Const NMBR_SHFP = 1         'Unique: number of HFP01 or HFP01SC sensors to measure (Maximum is 4) .
-Const NMBR_CS6xx = 2        'Unique: number of CS616, CS650, CS655, TDR-315 or 5TM sensors (Maximum is 2)
+Const NMBR_CS6xx = 1        'Unique: number of CS616, CS650, CS655, TDR-315 or 5TM sensors (Maximum is 2)
 Const NMBR_PROFILE = 6      'Unique: number of T/VWC probes (TDR-315 or 5TM) in profile (Maximum is 6)
 
 'Composite boolean variables for variables above
@@ -138,9 +139,9 @@ Const SENSOR_TMPR_RH     = ((SENSOR_HMP155A) OR (SENSOR_HC2S3) OR (SENSOR_HMP45C
 Const SENSOR_Rn          = ((SENSOR_CNR4) OR (SENSOR_NR01) OR (SENSOR_NR_LITE))
 Const SENSOR_TE525x      = ((SENSOR_TE525) OR (SENSOR_TE525WS) OR (SENSOR_TE525MM) OR (SENSOR_TE525_wf))
 Const SENSOR_HFP         = ((SENSOR_HFP01) OR (SENSOR_HFP01SC))
-Const SENSOR_CS6XX       = ((SENSOR_CS616) OR (SENSOR_CS65X) OR (SENSOR_TDR315) OR (SENSOR_5TM))
-Const SENSOR_SOIL_T      = ((SENSOR_TCAV) OR (SENSOR_CS65X) OR (SENSOR_TDR315) OR (SENSOR_5TM))
-Const SENSOR_PROFILE     = ((PROFILE_TDR315) OR (PROFILE_5TM))
+Const SENSOR_CS6XX       = ((SENSOR_CS616) OR (SENSOR_CS65X) OR (SENSOR_TDR31X) OR (SENSOR_5TM))
+Const SENSOR_SOIL_T      = ((SENSOR_TCAV) OR (SENSOR_CS65X) OR (SENSOR_TDR31X) OR (SENSOR_5TM))
+Const SENSOR_PROFILE     = ((PROFILE_TDR31X) OR (PROFILE_5TM))
 
 
 '*** Beginning field-configurable constants ***
@@ -456,12 +457,12 @@ Const CS65X_SDI12_Address_2 = 2        'Unique: SDI address for CS655 #2
 '        Shield #2 (clear)
 '*** End of CS65X wiring ***
 #EndIf
-#If (SENSOR_TDR315) Then
+#If (SENSOR_TDR31X) Then
 
-Const TDR315_SDI12_PORT      = 7    'Control port for SDI-12 data
-Const TDR315_SDI12_Address_1 = 1    'Unique: SDI address for TDR-315 #1
+Const TDR31X_SDI12_PORT      = 7    'Control port for SDI-12 data
+Const TDR31X_SDI12_Address_1 = 1    'Unique: SDI address for TDR-315 #1
 #If (NMBR_CS6xx = 2) Then
-Const TDR315_SDI12_Address_2 = 2    'Unique: SDI address for TDR-315 #2
+Const TDR31X_SDI12_Address_2 = 2    'Unique: SDI address for TDR-315 #2
 #EndIf
 '*** Beginning of TDR-315 wiring ***
 'C5       SDI-12 data #1 (blue)
@@ -493,11 +494,11 @@ Const fiveTM_SDI12_Address_2   = 2     'Unique: SDI address for TDR-315 #2
 
 'Use `NMBR_PROFILE` above to specify number of T/VWC probes in profile (Maximum is 6)
 
-#If (PROFILE_TDR315) Then
+#If (PROFILE_TDR31X) Then
 
-Const TDR315_SDI12_Address_P = 3      'Unique: first address in sequential series
-#If (NOT SENSOR_TDR315) Then
-Const TDR315_SDI12_PORT    = 7      'Control port for SDI-12 data
+Const TDR31X_SDI12_Address_P = 3      'Unique: first address in sequential series
+#If (NOT SENSOR_TDR31X) Then
+Const TDR31X_SDI12_PORT    = 7      'Control port for SDI-12 data
 '*** Beginning of TDR-315 wiring ***
 'C5       SDI-12 data #1 (blue)
 '         SDI-12 data #2 (blue
@@ -762,6 +763,8 @@ Dim scan_count                As Long        'Number scans executed. Working var
 Dim slowsequence_finished_flg As Boolean     'Flag used to indicate that the slowSequence has finished its scan.
 Dim slowsequence_disable_flg  As Boolean     'Flag used to decimate statistics in main scan.
 
+Dim slowsequence_5_finished_flg As Boolean  'Flag used to indicate that the 5-minute slowSequence has finished its scan.
+Dim slowsequence_5_disable_flg As Boolean   'Flag used to decimate statistics in main scan for 5-minute scan.
 Dim sys_conf_var_file         As Long        'Filehandle for the file that contains the system configuration variables in the CPU.
 
 Dim i, i_slow                 As Long        'Index variables for the outmost loop. "i" in main scan and "i_slow" in slow scan sequence
@@ -1574,108 +1577,6 @@ DataTable (comp_mean, TRUE, 1)
 
 EndTable
 '*** End of IRGA constants, variables, and working data table ***
-
-'*** Beginning of old eddy-covariance processing data table
-Dim cov_array_sonic(1,4)                   'used to hold input data for cov instructions 
-Dim cov_array_cs(4,4)
-
-Const old_Lv = 2440 'estimate of latent heat of vaporization, J/g
-Const old_Cp = 1004.67 'estimate of heat capacity of air, J/(kg K)
-'MU_WPL, Rd change <=0.1% by using new program variables
-Dim old_tau
-Dim old_L
-Dim old_u_star
-Dim old_rho_d_mean 'kg/m^3
-Dim old_rho_a_mean 'kg/m^3
-Dim old_sigma_wpl
-Dim old_Fc_irga
-Dim old_LE_irga
-Dim old_CO2_wpl_LE
-Dim old_CO2_wpl_H
-Dim old_Fc_wpl
-Dim old_H2O_wpl_LE
-Dim old_H2O_wpl_H
-Dim old_LE_wpl
-Dim old_Fc_hf_irga
-Dim old_CO2_hf_wpl_LE
-Dim old_CO2_hf_wpl_H
-Dim old_Fc_hf_wpl
-Dim old_Hs
-Dim old_Hc
-Units old_L = m
-Units old_u_star = m/s
-Units old_Fc_irga = mg/(m^2 s)
-Units old_LE_irga = W/m^2
-Units old_CO2_wpl_LE = mg/(m^2 s)
-Units old_CO2_wpl_H = mg/(m^2 s)
-Units old_Fc_wpl = mg/(m^2 s)
-Units old_H2O_wpl_LE = W/m^2
-Units old_H2O_wpl_H = W/m^2
-Units old_LE_wpl = W/m^2
-Units old_Fc_hf_irga = mg/(m^2 s)
-Units old_CO2_hf_wpl_LE = mg/(m^2 s)
-Units old_CO2_hf_wpl_H = mg/(m^2 s)
-Units old_Fc_hf_wpl = mg/(m^2 s)
-Units old_Hs = W/m^2
-Units old_Hc = W/m^2
-
-Dim old_work_out(31)
-Alias old_work_out(1) = old_Ts_Ts_cov          'results of covariance instructions, 10 qntys
-Alias old_work_out(2) = old_Ts_Ux_cov
-Alias old_work_out(3) = old_Ts_Uy_cov
-Alias old_work_out(4) = old_Ts_Uz_cov
-Alias old_work_out(5) = old_Ux_Ux_cov
-Alias old_work_out(6) = old_Ux_Uy_cov
-Alias old_work_out(7) = old_Ux_Uz_cov
-Alias old_work_out(8) = old_Uy_Uy_cov
-Alias old_work_out(9) = old_Uy_Uz_cov
-Alias old_work_out(10) = old_Uz_Std
-Alias old_work_out(11) = old_CO2_mg_m3_Std         'results of 3 covariances, 12 #s
-Alias old_work_out(12) = old_CO2_Ux_cov
-Alias old_work_out(13) = old_CO2_Uy_cov
-Alias old_work_out(14) = old_CO2_Uz_cov
-Alias old_work_out(15) = old_H2O_g_m3_Std
-Alias old_work_out(16) = old_H2O_Ux_cov
-Alias old_work_out(17) = old_H2O_Uy_cov
-Alias old_work_out(18) = old_H2O_Uz_cov
-Alias old_work_out(19) = old_Tc_stdev
-Alias old_work_out(20) = old_Tc_Ux_cov
-Alias old_work_out(21) = old_Tc_Uy_cov
-Alias old_work_out(22) = old_Tc_Uz_cov
-Alias old_work_out(23) = old_CO2_mg_m3_Avg    'four averages
-Alias old_work_out(24) = old_H2O_g_m3_Avg
-Alias old_work_out(25) = old_amb_press_Avg
-Alias old_work_out(26) = old_Tc_Avg
-Alias old_work_out(27) = old_CO2_hf_mg_m3_Avg '1 average
-Alias old_work_out(28) = old_CO2_hf_mg_m3_Std 'results of 1 covariance, 4#s
-Alias old_work_out(29) = old_CO2_hf_Ux_cov
-Alias old_work_out(30) = old_CO2_hf_Uy_cov
-Alias old_work_out(31) = old_CO2_hf_Uz_cov
-Units old_Uz_Std = m/s
-Units old_CO2_mg_m3_Std = mg/m^3
-Units old_H2O_g_m3_Std = g/m^3
-Units old_CO2_mg_m3_Avg = mg/m^3
-Units old_H2O_g_m3_Avg = g/m^3
-Units old_amb_press_Avg = kPa
-Units old_Tc_Avg = C
-Units old_CO2_hf_mg_m3_Std = mg/m^3
-
-DataTable(old_cov_work,TRUE,1)
-  TableHide
-  DataInterval(0,OUTPUT_INTERVAL,Min,1)
-  Covariance(4,cov_array_sonic(1,1),IEEE4,sonic_disable_f,10)
-  Covariance(4,cov_array_cs(1,1),IEEE4,irga_disable_f,4)
-  Covariance(4,cov_array_cs(2,1),IEEE4,irga_disable_f,4)
-  Covariance(4,cov_array_cs(3,1),IEEE4,irga_disable_f,4)
-  Average(1,CO2,IEEE4,irga_disable_f)
-  Average(1,H2O,IEEE4,irga_disable_f)
-  Average(1,amb_press,IEEE4,irga_disable_f)
-  Average(1,Tc,IEEE4,irga_disable_f)
-  Average(1,CO2_hf,IEEE4,irga_disable_f)
-  Covariance(4,cov_array_cs(4,1),IEEE4,irga_disable_f,4)
-EndTable
-'*** End of old eddy-covariance processing data table
-
 #If (SENSOR_FW) Then
 '*** Beginning of FW constants, variables, and working data table ***
 Public time_const_FW =  0.001         'default value (seconds). It will be recalculated inside the program
@@ -2007,40 +1908,40 @@ Units cs65x_ec = dS/m
 Units cs65x_tmpr = C
 '*** End of CS65X constants and variables ***
 #EndIf
-#If (SENSOR_TDR315) Then
+#If (SENSOR_TDR31X) Then
 
-'*** Beginning of TDR315 constants and variables ***
+'*** Beginning of TDR31X constants and variables ***
 
-Public tdr315_wc(NMBR_CS6xx)      'volumetric water content, %
-Public tdr315_tmpr(NMBR_CS6xx)    'soil temperature, degC
-Public tdr315_E(NMBR_CS6xx)       'soil permittivity, unitless
-Public tdr315_bulkEC(NMBR_CS6xx)  'bulk electrical conductivity, uS/cm
-Public tdr315_poreEC(NMBR_CS6xx)  'soil pore water EC, uS/cm
-Dim tdr315_raw(5)       'holds response from sensor #X
-Units tdr315_wc = %
-Units tdr315_tmpr = C
-Units tdr315_E = unitless
-Units tdr315_bulkEC = uS/cm
-Units tdr315_poreEC = uS/cm
-'*** End of TDR315 constants and variables ***
+Public tdr31X_wc(NMBR_CS6xx)      'volumetric water content, %
+Public tdr31X_tmpr(NMBR_CS6xx)    'soil temperature, degC
+Public tdr31X_E(NMBR_CS6xx)       'soil permittivity, unitless
+Public tdr31X_bulkEC(NMBR_CS6xx)  'bulk electrical conductivity, uS/cm
+Public tdr31X_poreEC(NMBR_CS6xx)  'soil pore water EC, uS/cm
+Dim tdr31X_raw(5)       'holds response from sensor #X
+Units tdr31X_wc = %
+Units tdr31X_tmpr = C
+Units tdr31X_E = unitless
+Units tdr31X_bulkEC = uS/cm
+Units tdr31X_poreEC = uS/cm
+'*** End of TDR31X constants and variables ***
 #EndIf
-#If (PROFILE_TDR315) Then
+#If (PROFILE_TDR31X) Then
 
-'*** Beginning of TDR315 profile constants and variables ***
-Public profile_tdr315_wc(NMBR_PROFILE)      'volumetric water content, %
-Public profile_tdr315_tmpr(NMBR_PROFILE)    'soil temperature, degC
-Public profile_tdr315_E(NMBR_PROFILE)       'soil permittivity, unitless
-Public profile_tdr315_bulkEC(NMBR_PROFILE)  'bulk electrical conductivity, uS/cm
-Public profile_tdr315_poreEC(NMBR_PROFILE)  'soil pore water EC, uS/cm
-#If (NOT SENSOR_TDR315) Then
-Dim tdr315_raw(5)       'holds response from sensor #X
+'*** Beginning of TDR31X profile constants and variables ***
+Public profile_tdr31X_wc(NMBR_PROFILE)      'volumetric water content, %
+Public profile_tdr31X_tmpr(NMBR_PROFILE)    'soil temperature, degC
+Public profile_tdr31X_E(NMBR_PROFILE)       'soil permittivity, unitless
+Public profile_tdr31X_bulkEC(NMBR_PROFILE)  'bulk electrical conductivity, uS/cm
+Public profile_tdr31X_poreEC(NMBR_PROFILE)  'soil pore water EC, uS/cm
+#If (NOT SENSOR_TDR31X) Then
+Dim tdr31X_raw(5)       'holds response from sensor #X
 #EndIf
-Units profile_tdr315_wc = %
-Units profile_tdr315_tmpr = C
-Units profile_tdr315_E = unitless
-Units profile_tdr315_bulkEC = uS/cm
-Units profile_tdr315_poreEC = uS/cm
-'*** End of TDR315 profile constants and variables ***
+Units profile_tdr31X_wc = %
+Units profile_tdr31X_tmpr = C
+Units profile_tdr31X_E = unitless
+Units profile_tdr31X_bulkEC = uS/cm
+Units profile_tdr31X_poreEC = uS/cm
+'*** End of TDR31X profile constants and variables ***
 #EndIf
 #If (SENSOR_5TM) Then
 
@@ -2239,6 +2140,42 @@ EndTable
 #EndIf
 '*** End of LTAR related variables and constants ***
 
+'*** Beginning of LTAR 1-minute related constants and variables ***
+#If (LTAR_CORE_TABLE) Then
+Dim LTAR_wnd_dir_compass_1min
+Dim LTAR_VPD_air_1min
+Units LTAR_wnd_dir_compass_1min = degrees
+Units LTAR_VPD_air_1min = kPa
+
+Dim stats_out_ltar_1min(6)
+Alias stats_out_ltar_1min(1) = LTAR_wnd_spd_1min
+Alias stats_out_ltar_1min(2) = LTAR_rslt_wnd_spd_1min
+Alias stats_out_ltar_1min(3) = LTAR_wnd_dir_sonic_1min
+Alias stats_out_ltar_1min(4) = LTAR_std_wnd_dir_1min
+Alias stats_out_ltar_1min(5) = LTAR_e_sat_1min
+Alias stats_out_ltar_1min(6) = LTAR_e_1min
+Units LTAR_wnd_spd_1min = m/s
+Units LTAR_rslt_wnd_spd_1min = m/s
+Units LTAR_wnd_dir_sonic_1min = degrees
+Units LTAR_std_wnd_dir_1min = degrees
+Units LTAR_e_sat_1min = kPa
+Units LTAR_e_1min = kPa
+
+'1 minute wind data for LTAR Core
+DataTable (stats_LTAR_1min,TRUE,1)
+  TableHide
+  DataInterval (0,1,Min,1)
+  WindVector (1, Uy, Ux, IEEE4, sonic_disable_f, 0, 1, 2)
+  #If (SENSOR_IRGASON) Then
+  Average (1, e_sat,     IEEE4, (irga_disable_f OR sonic_disable_f OR H2O_bad_rng_sig_array(MAX_LAG +1)))
+  Average (1, e,         IEEE4, (irga_disable_f OR sonic_disable_f OR H2O_bad_rng_sig_array(MAX_LAG +1)))
+  #EndIf
+  #If (NOT SENSOR_IRGASON) Then
+  Average (1, e_sat,     IEEE4, (irga_disable_f OR irga_amb_tmpr_f OR H2O_bad_rng_sig_array(MAX_LAG +1)))
+  Average (1, e,         IEEE4, (irga_disable_f OR irga_amb_tmpr_f OR H2O_bad_rng_sig_array(MAX_LAG +1)))
+  #EndIf
+EndTable
+#EndIf
 
 '*** Beginning display menu ***
 DisplayMenu ("System Control", TRUE)
@@ -2340,25 +2277,6 @@ Const ONE_FULL_TABLE = TRUE         'Unique: TRUE if all hourly or half-hourly d
 DataTable (Flux, TRUE, FLUX_SIZE_CPU)
   DataInterval (0, OUTPUT_INTERVAL, Min, 10)
   TableFile ("CRD:"&Status.SerialNumber(1,1)&".Flux_", 64, -1, 0, NMBR_DAY_FLUX_CRD, Day, 0, 0)
-
-  '*** Beginning of old flux eddy covariance output ***
-  #If (SENSOR_CSAT3AEC150) Then
-  Sample(1,old_L,IEEE4)              'monin obukhov length, meters
-  Sample(1,old_u_star,IEEE4)         'friction velocity, m/s
-  Sample(1,old_Fc_wpl,IEEE4)         'density-corrected (WPL) CO2 flux, mg/m3
-  Sample(1,old_Fc_hf_wpl,IEEE4)      'WPL-corrected CO2 flux using alt. CO2 value
-  Sample(1,old_LE_wpl,IEEE4)         'density-corrected (WPL) latent heat flux, W/m2
-  Sample(1,old_Hc,IEEE4)             'density-corrected sensible heat flux, W/m2
-  Sample(1,old_Uz_Std,IEEE4)         'stdev of vertical wind, m/s
-  Sample(1,old_CO2_mg_m3_Avg,IEEE4)         'mean of CO2 conc, mg/m3
-  Sample(1,old_CO2_mg_m3_Std,IEEE4)         'stdev of CO2 conc, mg/m3
-  Sample(1,old_CO2_hf_mg_m3_Avg,IEEE4) 
-  Sample(1,old_CO2_hf_mg_m3_Std,IEEE4)
-  Sample(1,old_Tc_Avg,IEEE4)
-  Sample(1,old_amb_press_Avg,IEEE4)
-  #EndIf
-  '*** End of old eddy covariance output ***
-
   '**** Beginning of flux and quality classification data ***
   Sample (1, Fc_molar,    IEEE4)    'Carbon dioxide flux in umol/(m^2 s) after coordinate rotations, freq corrections, and WPL correction
   Sample (1, Fc_mass,     IEEE4)    'Carbon dioxide flux in mg/(m^2 s) after coordinate rotations, freq corrections, and WPL correction
@@ -2547,15 +2465,15 @@ DataTable (Flux, TRUE, FLUX_SIZE_CPU)
   Average (NMBR_CS6xx, cs65x_tmpr(1),IEEE4, slowsequence_disable_flg)            'CS65X probe temperature.
   '*** End of CS65X output data ***
   #EndIf
-  #If (SENSOR_TDR315) Then
+  #If (SENSOR_TDR31X) Then
   
-  '*** Beginning of TDR315 output data ***
-  Average (NMBR_CS6xx, tdr315_wc(1),   IEEE4, slowsequence_disable_flg)
-  Average (NMBR_CS6xx, tdr315_tmpr(1), IEEE4, slowsequence_disable_flg)
-  Average (NMBR_CS6xx, tdr315_E(1),   IEEE4, slowsequence_disable_flg)
-  Average (NMBR_CS6xx, tdr315_bulkEC(1),   IEEE4, slowsequence_disable_flg)
-  Average (NMBR_CS6xx, tdr315_poreEC(1),   IEEE4, slowsequence_disable_flg)
-  '*** End of TDR315 output data ***
+  '*** Beginning of TDR31X output data ***
+  Average (NMBR_CS6xx, tdr31X_wc(1),   IEEE4, slowsequence_5_disable_flg)
+  Average (NMBR_CS6xx, tdr31X_tmpr(1), IEEE4, slowsequence_5_disable_flg)
+  Average (NMBR_CS6xx, tdr31X_E(1),   IEEE4, slowsequence_5_disable_flg)
+  Average (NMBR_CS6xx, tdr31X_bulkEC(1),   IEEE4, slowsequence_5_disable_flg)
+  Average (NMBR_CS6xx, tdr31X_poreEC(1),   IEEE4, slowsequence_5_disable_flg)
+  '*** End of TDR31X output data ***
   #EndIf
   #If (SENSOR_5TM) Then
 
@@ -2598,15 +2516,15 @@ DataTable (Flux, TRUE, FLUX_SIZE_CPU)
   '*** End of HFP01SC output data ***
   #EndIf
 
-  #If (PROFILE_TDR315) Then
+  #If (PROFILE_TDR31X) Then
   
-  '*** Beginning of TDR315 profile output data ***
-  Average (NMBR_PROFILE, profile_tdr315_wc(1),   IEEE4, slowsequence_disable_flg)
-  Average (NMBR_PROFILE, profile_tdr315_tmpr(1), IEEE4, slowsequence_disable_flg)
-  Average (NMBR_PROFILE, profile_tdr315_E(1),   IEEE4, slowsequence_disable_flg)
-  Average (NMBR_PROFILE, profile_tdr315_bulkEC(1),   IEEE4, slowsequence_disable_flg)
-  Average (NMBR_PROFILE, profile_tdr315_poreEC(1),   IEEE4, slowsequence_disable_flg)
-  '*** End of TDR315 profile output data ***
+  '*** Beginning of TDR31X profile output data ***
+  Average (NMBR_PROFILE, profile_tdr31X_wc(1),   IEEE4, slowsequence_5_disable_flg)
+  Average (NMBR_PROFILE, profile_tdr31X_tmpr(1), IEEE4, slowsequence_5_disable_flg)
+  Average (NMBR_PROFILE, profile_tdr31X_E(1),   IEEE4, slowsequence_5_disable_flg)
+  Average (NMBR_PROFILE, profile_tdr31X_bulkEC(1),   IEEE4, slowsequence_5_disable_flg)
+  Average (NMBR_PROFILE, profile_tdr31X_poreEC(1),   IEEE4, slowsequence_5_disable_flg)
+  '*** End of TDR31X profile output data ***
   #EndIf  
   #If (PROFILE_5TM) Then
   
@@ -2909,6 +2827,89 @@ DataTable (Time_Series, TRUE, -1)
 EndTable
 
 'LTAR Common Observatory Repository (CORe) data <https://ltar.nal.usda.gov/>
+#If (LTAR_CORE_TABLE_1Minute) Then
+DataTable (LTAR_Met_1Minute, TRUE, -1)
+  DataInterval (0,1,Min,10)
+  TableFile ("CRD:"&Status.SerialNumber(1,1)&".LTAR_Met_1Min", 64, -1, 0, NMBR_DAY_FLUX_CRD, Day, 0, 0)
+    '*** Beginning of Phase 1 measurements ***
+  Average (1, amb_tmpr,  IEEE4, irga_amb_tmpr_f)  'AirTemperature (Degrees C)
+  Sample  (1, LTAR_rslt_wnd_spd_1min,  IEEE4)          'WindSpeed (m/s)
+    FieldNames ("rslt_wnd_spd")
+  Sample  (1, LTAR_wnd_dir_compass_1min,   FP2)        'WindDirection (Degrees) [w.r.t. True north]
+    FieldNames("wnd_dir_compass")
+  #If (SENSOR_IRGASON) Then                       'RelativeHumidity (percent)
+  Average (1, RH,         IEEE4, (irga_disable_f OR sonic_disable_f OR H2O_bad_rng_sig_array(MAX_LAG +1)))
+  #EndIf
+  #If (NOT SENSOR_IRGASON) Then
+  Average (1, RH,         IEEE4, (irga_disable_f OR irga_amb_tmpr_f OR H2O_bad_rng_sig_array(MAX_LAG +1)))
+  #EndIf
+  Average (1, amb_press, IEEE4, irga_amb_press_f) 'AirPressure (kPa)
+  #If (SENSOR_LI190SB) Then
+  Average (1, PAR_density,      IEEE4, slowsequence_disable_flg) 'PAR (umol/m^2/s)
+  #EndIf
+  'omit ShortWaveIn/LongWaveIn because no sensors
+  Sample  (1, LTAR_std_wnd_dir_1min, FP2)                
+    FieldNames("std_wnd_dir")
+  Sample  (1, LTAR_VPD_air_1min, IEEE4)
+    FieldNames("VPD_air")
+  #If (SENSOR_NR_LITE) Then
+  Average (1, Rn_meas, IEEE4, slowsequence_disable_flg)
+  #EndIf
+  Sample (1,LTAR_e_sat_1min,IEEE4)
+  FieldNames("e_sat")
+  Sample (1,LTAR_e_1min,IEEE4)
+  FieldNames("e")
+  #If (SENSOR_TDR31X) Then
+ 
+  '*** Beginning of TDR31X output data ***
+  Average (NMBR_CS6xx, tdr31X_wc(1),   IEEE4, slowsequence_5_disable_flg)
+  Average (NMBR_CS6xx, tdr31X_tmpr(1), IEEE4, slowsequence_5_disable_flg)
+  Average (NMBR_CS6xx, tdr31X_E(1),   IEEE4, slowsequence_5_disable_flg)
+  Average (NMBR_CS6xx, tdr31X_bulkEC(1),   IEEE4, slowsequence_5_disable_flg)
+  Average (NMBR_CS6xx, tdr31X_poreEC(1),   IEEE4, slowsequence_5_disable_flg)
+  '*** End of TDR31X output data ***
+  #EndIf
+
+  #If (SENSOR_TCAV) Then
+  '*** Beginning of TCAV output data ***
+  Average (NMBR_TCAV, Tsoil(1), IEEE4, slowsequence_disable_flg)
+  '*** End of TCAV output data ***
+  #EndIf
+  #If (SENSOR_HFP) Then
+  '*** Beginning of HFP01 output data ***
+  Sample (NMBR_SHFP, shf_plate_avg(1), IEEE4)                                    'Heat flux through a soil heat flux plate
+  #If (NOT SENSOR_HFP01SC) Then
+  Sample (1, SHFP_1_SENS, FP2)
+    FieldNames("SHFP_1_SENS")
+  #If (NMBR_SHFP > 1) Then
+  Sample (1, SHFP_2_SENS, FP2)
+    FieldNames("SHFP_2_SENS")
+    Units SHFP_2_SENS = uv/W/m^2
+  #EndIf
+  #If (NMBR_SHFP > 2) Then
+  Sample (1, SHFP_3_SENS, FP2)
+    FieldNames("SHFP_3_SENS")
+    Units SHFP_3_SENS = uv/W/m^2
+  #EndIf
+  #If (NMBR_SHFP > 3) Then
+  Sample (1, SHFP_4_SENS, FP2)
+    FieldNames("SHFP_4_SENS")
+    Units SHFP_4_SENS = uv/W/m^2
+  #EndIf
+  #EndIf
+  '*** End of HFP01 output data ***  
+  #EndIf
+  #If (SENSOR_HFP01SC) Then
+
+  '*** Beginning of HFP01SC output data ***
+  Sample (NMBR_SHFP, shf_plate_cal(1), IEEE4)                                    'Calibrations of self-calibrated soil heat flux plate
+  '*** End of HFP01SC output data ***
+  #EndIf
+  
+  EndTable
+#EndIf
+
+'LTAR Common Observatory Repository (CORe) data <https://ltar.nal.usda.gov/>
 #If (LTAR_CORE_TABLE) Then
 DataTable (LTAR_Met, TRUE, -1)
   DataInterval (0,15,Min,10)
@@ -2949,9 +2950,69 @@ DataTable (LTAR_Met, TRUE, -1)
   #If (SENSOR_NR_LITE) Then
   Average (1, Rn_meas, IEEE4, slowsequence_disable_flg)
   #EndIf
+Sample (1,LTAR_e_sat,IEEE4)
+  FieldNames("e_sat")
+  Sample (1,LTAR_e,IEEE4)
+  FieldNames("e")
+  #If (SENSOR_TDR31X) Then
+  
+  '*** Beginning of TDR31X output data ***
+  Average (NMBR_CS6xx, tdr31X_wc(1),   IEEE4, slowsequence_5_disable_flg)
+  Average (NMBR_CS6xx, tdr31X_tmpr(1), IEEE4, slowsequence_5_disable_flg)
+  Average (NMBR_CS6xx, tdr31X_E(1),   IEEE4, slowsequence_5_disable_flg)
+  Average (NMBR_CS6xx, tdr31X_bulkEC(1),   IEEE4, slowsequence_5_disable_flg)
+  Average (NMBR_CS6xx, tdr31X_poreEC(1),   IEEE4, slowsequence_5_disable_flg)
+  '*** End of TDR31X output data ***
+  #EndIf
+
+  #If (SENSOR_TCAV) Then
+  '*** Beginning of TCAV output data ***
+  Average (NMBR_TCAV, Tsoil(1), IEEE4, slowsequence_disable_flg)
+  '*** End of TCAV output data ***
+  #EndIf
+  #If (PROFILE_TDR31X) Then
+  '*** Beginning of TDR31X profile output data ***
+  Average (NMBR_PROFILE, profile_tdr31X_wc(1),   IEEE4, slowsequence_5_disable_flg)
+  Average (NMBR_PROFILE, profile_tdr31X_tmpr(1), IEEE4, slowsequence_5_disable_flg)
+  Average (NMBR_PROFILE, profile_tdr31X_E(1),   IEEE4, slowsequence_5_disable_flg)
+  Average (NMBR_PROFILE, profile_tdr31X_bulkEC(1),   IEEE4, slowsequence_5_disable_flg)
+  Average (NMBR_PROFILE, profile_tdr31X_poreEC(1),   IEEE4, slowsequence_5_disable_flg)
+  '*** End of TDR31X profile output data ***
+  #EndIf  
   '*** End of anticipated future measurements ***
-EndTable
+    #If (SENSOR_HFP) Then
+  '*** Beginning of HFP01 output data ***
+  Sample (NMBR_SHFP, shf_plate_avg(1), IEEE4)                                    'Heat flux through a soil heat flux plate
+  #If (NOT SENSOR_HFP01SC) Then
+  Sample (1, SHFP_1_SENS, FP2)
+    FieldNames("SHFP_1_SENS")
+  #If (NMBR_SHFP > 1) Then
+  Sample (1, SHFP_2_SENS, FP2)
+    FieldNames("SHFP_2_SENS")
+    Units SHFP_2_SENS = uv/W/m^2
+  #EndIf
+  #If (NMBR_SHFP > 2) Then
+  Sample (1, SHFP_3_SENS, FP2)
+    FieldNames("SHFP_3_SENS")
+    Units SHFP_3_SENS = uv/W/m^2
+  #EndIf
+  #If (NMBR_SHFP > 3) Then
+  Sample (1, SHFP_4_SENS, FP2)
+    FieldNames("SHFP_4_SENS")
+    Units SHFP_4_SENS = uv/W/m^2
+  #EndIf
+  #EndIf
+  '*** End of HFP01 output data ***  
+  #EndIf
+  #If (SENSOR_HFP01SC) Then
+
+  '*** Beginning of HFP01SC output data ***
+  Sample (NMBR_SHFP, shf_plate_cal(1), IEEE4)                                    'Calibrations of self-calibrated soil heat flux plate
+  '*** End of HFP01SC output data ***
+  #EndIf
+  EndTable
 #EndIf
+
 
 '*******************'
 '*** SUBROUTINEs ***'
@@ -5285,63 +5346,18 @@ BeginProg
         LTAR_VPD_air = LTAR_e_sat - LTAR_e 'water vapor pressure deficit
       EndIf
       #EndIf
-      '*** End of LTAR CORe table processing ***
-
-
-      '*** Beginning of old eddy-covariance processing ***
-      #If (SENSOR_CSAT3AEC150) Then
-      cov_array_sonic(1,1) = Ts
-      Move (cov_array_sonic(1,2),3,Ux,3)
-
-      cov_array_cs(1,1) = CO2
-      cov_array_cs(2,1) = H2O
-      cov_array_cs(3,1) = Tc
-      cov_array_cs(4,1) = CO2_hf
-      Move (cov_array_cs(1,2),3,Ux,3)
-      Move (cov_array_cs(2,2),3,Ux,3)
-      Move (cov_array_cs(3,2),3,Ux,3)
-      Move (cov_array_cs(4,2),3,Ux,3)
-
-      CallTable old_cov_work
-      If (old_cov_work.Output(1,1)) Then
-        GetRecord(old_work_out(1),old_cov_work,1)
-        
-        old_tau = SQR((old_Ux_Uz_cov*old_Ux_Uz_cov)+(old_Uy_Uz_cov*old_Uy_Uz_cov))
-        old_u_star = SQR(old_tau)
-        old_L = -old_u_star^3*(old_Tc_Avg+273.15)/(0.4*9.8*old_Ts_Uz_cov)
-        old_rho_d_mean = (old_amb_press_Avg/((old_Tc_Avg+273.15)*Rd))-(old_H2O_g_m3_Avg*MU_WPL)
-        old_rho_a_mean = (old_rho_d_mean+old_H2O_g_m3_Avg)/1000
-        old_Fc_irga = old_CO2_Uz_cov
-        old_LE_irga = old_Lv*old_H2O_Uz_cov
-        old_CO2_mg_m3_Std = SQR (old_CO2_mg_m3_Std)
-        old_H2O_g_m3_Std = SQR (old_H2O_g_m3_Std)
-        old_sigma_wpl = old_H2O_g_m3_Avg/old_rho_d_mean                   'WPL term
-
-        'EC150 Webb et al. (1980) term for carbon dioxide Eq. (24).
-        old_CO2_wpl_LE = MU_WPL*old_CO2_mg_m3_Avg/old_rho_d_mean*old_H2O_Uz_cov
-        old_CO2_wpl_H = (1+(MU_WPL*old_sigma_wpl))*old_CO2_mg_m3_Avg/(old_Tc_Avg+273.15)*old_Tc_Uz_cov
-        old_Fc_wpl = old_Fc_irga+old_CO2_wpl_LE+old_CO2_wpl_H
-
-        'EC150 Webb et al. (1980) term for water vapor Eq. (25).
-        old_H2O_wpl_LE = MU_WPL*old_sigma_wpl*old_LE_irga
-        old_H2O_wpl_H = (1+(MU_WPL*old_sigma_wpl))*old_H2O_g_m3_Avg/(old_Tc_Avg+273.15)*old_Lv*old_Tc_Uz_cov
-        old_LE_wpl = old_LE_irga+old_H2O_wpl_LE+old_H2O_wpl_H
-
-        'repeat using high-frequency tmpr CO2 value
-        old_Fc_hf_irga = old_CO2_hf_Uz_cov
-        old_CO2_hf_mg_m3_Std = SQR(old_CO2_hf_mg_m3_Std)
-        old_CO2_hf_wpl_LE = MU_WPL*old_CO2_hf_mg_m3_Avg/old_rho_d_mean*old_H2O_Uz_cov
-        old_CO2_hf_wpl_H = (1+(MU_WPL*old_sigma_wpl))*old_CO2_hf_mg_m3_Avg/(old_Tc_Avg+273.15)*old_Tc_Uz_cov
-        old_Fc_hf_wpl = old_Fc_hf_irga+old_CO2_hf_wpl_LE+old_CO2_hf_wpl_H
-        
-        old_Hs = old_rho_a_mean*old_Cp*old_Ts_Uz_cov
-        old_tau = old_rho_a_mean*old_tau
-        old_Uz_Std = SQR(old_Uz_Std)
-        old_Hc = old_rho_a_mean*old_Cp*old_Tc_Uz_cov
-      EndIf
+	  
+      #If (LTAR_CORE_TABLE_1Minute) Then
+      CallTable stats_LTAR_1min
+      If (stats_LTAR_1min.Output(1, 1)) Then
+        GetRecord (stats_out_ltar_1min, stats_LTAR_1min, 1)
+		'Rotate the sonic head RHC system so the negative x-axis points north
+        LTAR_wnd_dir_compass_1min = (360 + sonic_azimuth - LTAR_wnd_dir_sonic_1min) MOD 360
+        LTAR_VPD_air_1min = LTAR_e_sat_1min - LTAR_e_1min 'water vapor pressure deficit
+	   EndIf
       #EndIf
-      '*** End of old eddy-covariance processing ***
 
+      '*** End of LTAR CORe table processing ***
 
       #If (SENSOR_TMPR_RH) Then
 
@@ -5562,18 +5578,28 @@ BeginProg
       CallTable Flux_Notes
       #EndIf
 
-      'Save 15 Minute Meteorology Data for LTAR CORE
-      #If (LTAR_CORE_TABLE) Then
+    #If (LTAR_CORE_TABLE) Then
       CallTable LTAR_Met
       #EndIf
 
-      slowsequence_disable_flg = TRUE
+	  #If (LTAR_CORE_TABLE_1Minute) Then
+      CallTable LTAR_Met_1Minute
+      #EndIf
+      
+      'Save 15 Minute Meteorology Data for LTAR CORE
+    slowsequence_disable_flg = TRUE
       If (slowsequence_finished_flg) Then
         slowsequence_finished_flg = FALSE
         slowsequence_disable_flg  = FALSE
       EndIf
 
-    Else
+  slowsequence_5_disable_flg = TRUE
+      If (slowsequence_5_finished_flg) Then
+        slowsequence_5_finished_flg = FALSE
+        slowsequence_5_disable_flg  = FALSE
+      EndIf
+      
+     Else
       scan_count += 1
     EndIf
     CallTable diagnostic
@@ -5581,7 +5607,71 @@ BeginProg
   NextScan
 
   SlowSequence
+ Scan (1, Min, 0, 0)   
+#If (SENSOR_PROFILE) Then
+    '*** Beginning of TDR-31X profile measurements ***
+    For i_slow = 1 To NMBR_PROFILE
+      #If (PROFILE_TDR31X) Then
+      'XXXX WARNING assumes no address above 9 (default: 6 sensors #3-8)
+      SDI12Recorder (tdr31X_raw(1), TDR31X_SDI12_PORT, TDR31X_SDI12_Address_P+i_slow-1, "M!", 1, 0)
+      profile_tdr31X_wc(i_slow) = tdr31X_raw(1)
+      profile_tdr31X_tmpr(i_slow) = tdr31X_raw(2)
+      profile_tdr31X_E(i_slow) = tdr31X_raw(3)
+      profile_tdr31X_bulkEC(i_slow) = tdr31X_raw(4)
+      profile_tdr31X_poreEC(i_slow) = tdr31X_raw(5)
+      #EndIf
+      
+      #If (PROFILE_5TM) Then
+      'XXXX WARNING assumes no address above 9 (default: 6 sensors #3-8)
+      SDI12Recorder (fiveTM_raw(1), fiveTM_SDI12_PORT, fiveTM_SDI12_Address_P+i_slow-1, "M!", 1, 0)
+      profile_5TM_E(i_slow) = fiveTM_raw(1)
+      profile_5TM_tmpr(i_slow) = fiveTM_raw(2)
+      profile_5TM_wc(i_slow) = Topp_equation(fiveTM_raw(3))
+      #EndIf
+    Next i_slow
+    '*** End of TDR-31X profile measurements ***
+    #EndIf
+    #If (SENSOR_TDR31X) Then
 
+    '*** Beginning of TDR-31X measurements ***
+    SDI12Recorder (tdr31X_raw(1), TDR31X_SDI12_PORT, TDR31X_SDI12_Address_1, "M!", 1, 0)
+    tdr31X_wc(1)     = tdr31X_raw(1)
+    tdr31X_tmpr(1)   = tdr31X_raw(2)
+    tdr31X_E(1)      = tdr31X_raw(3)
+    tdr31X_bulkEC(1) = tdr31X_raw(4)
+    tdr31X_poreEC(1) = tdr31X_raw(5)
+    
+    #If (NMBR_CS6xx = 2) Then
+    SDI12Recorder (tdr31X_raw(1), TDR31X_SDI12_PORT, TDR31X_SDI12_Address_2, "M!", 1, 0)
+    tdr31X_wc(2)     = tdr31X_raw(1)
+    tdr31X_tmpr(2)   = tdr31X_raw(2)
+    tdr31X_E(2)      = tdr31X_raw(3)
+    tdr31X_bulkEC(2) = tdr31X_raw(4)
+    tdr31X_poreEC(2) = tdr31X_raw(5)
+    #EndIf
+    
+    #If ((SENSOR_HFP) AND (SENSOR_CS6XX) AND (SENSOR_SOIL_T))) Then
+
+    AvgRun (soil_wtr_current(1), NMBR_CS6xx, (tdr31X_wc(1)/100), NMBR_SOIL_T_WTR_DEL_SAMPLES) 'HINT scale % -> v/v
+    
+    If (soil_wtr_prev_Avg = NaN) Then
+      AvgSpa (soil_wtr_prev_Avg, NMBR_CS6xx, (tdr31X_wc(1)/100)) 'HINT scale % -> v/v
+    EndIf
+
+    #If ((SENSOR_TDR31X) AND ( NOT SENSOR_TCAV)) Then
+    AvgRun (Tsoil_current(1), NMBR_CS6xx, tdr31X_tmpr(1), NMBR_SOIL_T_WTR_DEL_SAMPLES)
+
+    If (Tsoil_prev_Avg = NaN) Then                         'As soon as program starts
+      AvgSpa (Tsoil_prev_Avg, NMBR_CS6xx, tdr31X_tmpr(1))
+    EndIf
+    #EndIf
+    #EndIf
+    '*** End of TDR-31X measurements ***
+    #EndIf
+        slowsequence_5_finished_flg = TRUE
+    NextScan
+  
+  SlowSequence
   Scan (SLOWSEQUENCE_SCAN_INTERVAL, mSec, 3, 0)
 
     'Measure battery voltage.
@@ -5714,7 +5804,9 @@ BeginProg
 
     '*** End of net radiation measurements ***
 
-    #EndIf
+   #EndIf
+    
+   
     #If (SENSOR_HFP01) Then
 
     '*** Beginning of HFP01 measurements ***
@@ -5857,43 +5949,6 @@ BeginProg
     #EndIf
     '*** End of CS65X measurements ***
     #EndIf
-    #If (SENSOR_TDR315) Then
-
-    '*** Beginning of TDR-315 measurements ***
-    SDI12Recorder (tdr315_raw(1), TDR315_SDI12_PORT, TDR315_SDI12_Address_1, "M!", 1, 0)
-    tdr315_wc(1)     = tdr315_raw(1)
-    tdr315_tmpr(1)   = tdr315_raw(2)
-    tdr315_E(1)      = tdr315_raw(3)
-    tdr315_bulkEC(1) = tdr315_raw(4)
-    tdr315_poreEC(1) = tdr315_raw(5)
-    
-    #If (NMBR_CS6xx = 2) Then
-    SDI12Recorder (tdr315_raw(1), TDR315_SDI12_PORT, TDR315_SDI12_Address_2, "M!", 1, 0)
-    tdr315_wc(2)     = tdr315_raw(1)
-    tdr315_tmpr(2)   = tdr315_raw(2)
-    tdr315_E(2)      = tdr315_raw(3)
-    tdr315_bulkEC(2) = tdr315_raw(4)
-    tdr315_poreEC(2) = tdr315_raw(5)
-    #EndIf
-    
-    #If ((SENSOR_HFP) AND (SENSOR_CS6XX) AND (SENSOR_SOIL_T))) Then
-
-    AvgRun (soil_wtr_current(1), NMBR_CS6xx, (tdr315_wc(1)/100), NMBR_SOIL_T_WTR_DEL_SAMPLES) 'HINT scale % -> v/v
-    
-    If (soil_wtr_prev_Avg = NaN) Then
-      AvgSpa (soil_wtr_prev_Avg, NMBR_CS6xx, (tdr315_wc(1)/100)) 'HINT scale % -> v/v
-    EndIf
-
-    #If ((SENSOR_TDR315) AND ( NOT SENSOR_TCAV)) Then
-    AvgRun (Tsoil_current(1), NMBR_CS6xx, tdr315_tmpr(1), NMBR_SOIL_T_WTR_DEL_SAMPLES)
-
-    If (Tsoil_prev_Avg = NaN) Then                         'As soon as program starts
-      AvgSpa (Tsoil_prev_Avg, NMBR_CS6xx, tdr315_tmpr(1))
-    EndIf
-    #EndIf
-    #EndIf
-    '*** End of TDR-315 measurements ***
-    #EndIf
     #If (SENSOR_5TM) Then
     
     '*** Beginning of 5TM measurements ***
@@ -5928,30 +5983,6 @@ BeginProg
     '*** End of 5TM measurements ***
     #EndIf
 
-    #If (SENSOR_PROFILE) Then
-
-    '*** Beginning of TDR-315 profile measurements ***
-    For i_slow = 1 To NMBR_PROFILE
-      #If (PROFILE_TDR315) Then
-      'XXXX WARNING assumes no address above 9 (default: 6 sensors #3-8)
-      SDI12Recorder (tdr315_raw(1), TDR315_SDI12_PORT, TDR315_SDI12_Address_P+i_slow-1, "M!", 1, 0)
-      profile_tdr315_wc(i_slow) = tdr315_raw(1)
-      profile_tdr315_tmpr(i_slow) = tdr315_raw(2)
-      profile_tdr315_E(i_slow) = tdr315_raw(3)
-      profile_tdr315_bulkEC(i_slow) = tdr315_raw(4)
-      profile_tdr315_poreEC(i_slow) = tdr315_raw(5)
-      #EndIf
-      
-      #If (PROFILE_5TM) Then
-      'XXXX WARNING assumes no address above 9 (default: 6 sensors #3-8)
-      SDI12Recorder (fiveTM_raw(1), fiveTM_SDI12_PORT, fiveTM_SDI12_Address_P+i_slow-1, "M!", 1, 0)
-      profile_5TM_E(i_slow) = fiveTM_raw(1)
-      profile_5TM_tmpr(i_slow) = fiveTM_raw(2)
-      profile_5TM_wc(i_slow) = Topp_equation(fiveTM_raw(3))
-      #EndIf
-    Next i_slow
-    '*** End of TDR-315 profile measurements ***
-    #EndIf
     #If (SENSOR_LI200X) OR (SENSOR_CS300) Then
 
     '*** Beginning of pyranometer measurements ***
