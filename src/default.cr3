@@ -1,6 +1,6 @@
 'Online Corrections Flux Program version 1.x
 
-'Copyright (c) 2017 Washington State University. Adapted with permission.
+'Copyright (c) 2018 Washington State University. Adapted with permission.
 'Copyright (c), 2014, 2015 Campbell Scientific, Inc. All rights reserved.
 'This program is intended for use with Campbell Scientific open-path eddy-covariance systems manufactured after Fall 2010 that use an EC150 with CSAT3A or an IRGASON.
 'The most common or “best practice” corrections are applied to fluxes in this program.  Consult the manual for details on these corrections.  It is the responsibility
@@ -128,6 +128,7 @@ Const PROFILE_5TM        = FALSE    'Unique: soil profile composed of Decagon De
 Const SENSOR_034B        = TRUE     'Unique: MetOne 034B cup & vane wind set
 Const SENSOR_GPS16X      = TRUE     'Unique: Garmin GPS16x-HVS GPS receiver
 Const SENSOR_DOOR        = TRUE     'Unique: reed switch enclosure door sensor
+Const SENSOR_TS45        = TRUE     'Unique: MorningStar TriStar TS-45 charge controller
 
 'adjust to reflect reality
 Const NMBR_SHFP = 1         'Unique: number of HFP01 or HFP01SC sensors to measure (Maximum is 4) .
@@ -621,6 +622,19 @@ Const DOOR_SWITCH_POLARITY = False   'switch NO vs NC; change if reported door s
 'C8      one wire
 '+5V     the other wire
 '*** End of door switch wiring ***
+#EndIf
+#If (SENSOR_TS45) Then
+
+Const TS45_COM = Com1    'Serial port for TS45
+
+'*** Beginning of TriStar TS-45 wiring ***
+'C1     Pin3 (RX)
+'C2     Pin2 (TX)
+'G       Pin5 (GND)
+'5V      Pin4 (DTR)
+'G       Pin7 (RTS)
+'*** End of TriStar TS-45 wiring ***
+
 #EndIf
 
 'POWER IN
@@ -2101,6 +2115,52 @@ Units nmbr_clock_change = occurrences
 Public door_is_open
 '*** End of door switch constants and variables ***
 #EndIf
+#If (SENSOR_TS45) Then
+
+'*** Beginning of TS45 constants and variables ***
+Const v_scale = 96.667
+Const i_scale = 66.667
+Const iload_scale = 316.67
+Const array_scale = 139.15
+Const ah_scale = 0.1
+
+Public ModbusRes
+Dim ts45_raw(22) As Long
+
+Public batt_V            'Battery voltage
+Public batt_sens_V       'Battery sense voltage
+Public array_V           'Array/Load voltage
+Public charge_I          'Charging current
+Public batt_V_slow       'Battery voltage, slow
+Public heatsink_T        'Heatsink temperature
+Public batt_T            'Battery temperature
+Public reference_V       'Charge regulator reference voltage
+Public ah_reset          'Ah resetable
+Public ah_total          'Ah total
+Public hourmeter         'hourmeter
+Public alarm_bits        'alarm bitfield
+Public fault_bits        'fault bitfield
+Public dip_num           'dip switch settings
+Public state_num         'Control state
+Public pwm_duty          'PWM Duty Cycle
+Units batt_V             = V
+Units batt_sens_V        = V
+Units array_V            = V
+Units charge_I           = A
+Units batt_V_slow        = V
+Units heatsink_T         = C
+Units batt_T             = C
+Units reference_V        = V
+Units ah_reset           = Ah
+Units ah_total           = Ah
+Units hourmeter          = hr
+Units alarm_bits         = unitless
+Units fault_bits         = unitless
+Units dip_num            = unitless
+Units state_num          = unitless
+Units pwm_duty           = fraction
+'*** End of TS45 constants and variables ***
+#EndIf
 
 '*** Beginning of LTAR related constants and variables ***
 #If (LTAR_CORE_TABLE) Then
@@ -2760,6 +2820,27 @@ DataTable (Flux_Notes, TRUE, FLUX_SIZE_CPU)
   Sample (1, Cp,         IEEE4)                 'specific heat of moist air at constant pressure, calculated using measurements from IRGASON [J/(kg K)]
   Sample (1, Lv,         IEEE4)                 'latent heat of vaporization [J/g].
   ' *** End of output atmospheric constants ***
+
+  '*** Beginning of TS-45 output data ***
+  #If (SENSOR_TS45) Then
+	Average(1, batt_V,       FP2, slowsequence_disable_flg)
+	Average(1, batt_sens_V,  FP2, slowsequence_disable_flg)
+	Average(1, array_V,      FP2, slowsequence_disable_flg)
+	Average(1, charge_I,     FP2, slowsequence_disable_flg)
+	Average(1, batt_V_slow,  FP2, slowsequence_disable_flg)
+	Average(1, heatsink_T,   FP2, slowsequence_disable_flg)
+	Average(1, batt_T,       FP2, slowsequence_disable_flg)
+	Average(1, reference_V,  FP2, slowsequence_disable_flg)
+	Sample (1, ah_reset,     IEEE4)
+	Sample (1, ah_total,     IEEE4)
+	Sample (1, hourmeter,    UINT2)
+	Sample (1, alarm_bits,   UINT4) 'HINT: 2-byte bit field
+	Sample (1, fault_bits,   UINT2)
+	Average(1, dip_num,      FP2, slowsequence_disable_flg)
+	Average(1, state_num,    FP2, slowsequence_disable_flg)
+	Average(1, pwm_duty,     FP2, slowsequence_disable_flg)
+  #EndIf
+  '*** End of TS-45 output data ***
 
   '*** Beginning of other output data ***
   #If (SENSOR_DOOR) Then
@@ -4709,6 +4790,10 @@ BeginProg
 
   'Set the SDM clock speed.
   SDMSpeed (SDM_PER)
+  
+  #If (SENSOR_TS45) Then
+  	SerialOpen(TS45_COM,9600,7,50,1000) 'Open serial port for ModbusMaster
+  #EndIf
 
   '*************************** SCAN LOOP  **************************************************
   Scan (SCAN_INTERVAL, mSec, SCAN_BUFFER_SIZE, 0)
@@ -6018,6 +6103,29 @@ BeginProg
     VoltDiff (T_SI111_targeted, 1, mV20, SI111_ANALOG_INPUT, True, 0, ANALOG_INTEGRATION, 1, 0)
     T_SI111_targeted = ((T_SI111_body + T_0C_K)^4 + m_SI111*T_SI111_targeted + b_SI111)^0.25 - T_0C_K       'T_SI111_targeted in C
     '*** End of SI111 measurements ***
+    #EndIf
+
+    #If (SENSOR_TS45) Then
+      
+    '*** Beginning of TS45 measurements ***
+		ModbusMaster(ModbusRes,TS45_COM,9600,1,4,ts45_raw(),9,22,3,50,1)
+    batt_sens_V = (ts45_raw(2) * v_scale) / (2^15)
+    array_V = (ts45_raw(3) * array_scale) / (2^15)
+    charge_I = (ts45_raw(4) * i_scale) / (2^15)
+    batt_V_slow = (ts45_raw(6) * v_scale) / (2^15)
+    heatsink_T = ts45_raw(7)
+    batt_T = ts45_raw(8)
+    reference_V = (ts45_raw(9) * v_scale) / (2^15)
+    'FIXME: scale high byte, follows big endian
+    ah_reset = (ts45_raw(10) + ts45_raw(11)) * ah_scale
+    ah_total = (ts45_raw(12) + ts45_raw(13)) * ah_scale
+    hourmeter = ts45_raw(14) + ts45_raw(15)
+    alarm_bits = ts45_raw(16) 'FIXME: incorporate 0x001D(HI) field
+    fault_bits = ts45_raw(17)
+    dip_num = ts45_raw(18)
+    state_num = ts45_raw(20)
+    pwm_duty = IIF(ts45_raw(21)>=230, 1, ts45_raw(21)/230)
+    '*** End of TS45 measurements ***
     #EndIf
 
     #If (SENSOR_GPS16X) Then
