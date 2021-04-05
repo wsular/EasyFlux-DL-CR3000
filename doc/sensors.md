@@ -32,7 +32,9 @@
 * Water content reflectometer, for heat storage term 
   ([TDR-315L](http://www.acclima.com) x1)
 * Soil heat flux plates ([HFP01](https://www.campbellsci.com/hfp01) x1)
-* Water content reflectometer, for vertical profiling (TDR-315L x6)
+* Water content reflectometer, for vertical profiling (TDR-315L)
+    * 6 at Cook East/West
+    * 2 at Boyd North/South
 
 
 ## Wiring

@@ -132,7 +132,7 @@ Const SENSOR_DOOR        = TRUE     'Unique: reed switch enclosure door sensor
 'adjust to reflect reality
 Const NMBR_SHFP = 1         'Unique: number of HFP01 or HFP01SC sensors to measure (Maximum is 4) .
 Const NMBR_CS6xx = 1        'Unique: number of CS616, CS650, CS655, TDR-315 or 5TM sensors (Maximum is 2)
-Const NMBR_PROFILE = 6      'Unique: number of T/VWC probes (TDR-315 or 5TM) in profile (Maximum is 6)
+Const NMBR_PROFILE = 2      'Unique: number of T/VWC probes (TDR-315 or 5TM) in profile (Maximum is 6)
 
 'Composite boolean variables for variables above
 Const SENSOR_TMPR_RH     = ((SENSOR_HMP155A) OR (SENSOR_HC2S3) OR (SENSOR_HMP45C))
