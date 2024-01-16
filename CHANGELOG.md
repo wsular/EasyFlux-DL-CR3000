@@ -7,7 +7,15 @@ Revision history for our modified version of EasyFlux&reg; DL for CR3000.
 >
 > *Supported sections: Security, Issues, Fixed, Added, Changed, Deprecated, Removed*
 
-## [Unreleased]
+## [ProgSig 18329] 2018-07-03
+
+### Changed
+
+* Reduce number of soil profile probes from 6 &rarr; 2
+
+----
+
+## [ProgSig 29249] 2018-07-03
 
 ### Fixed
 
@@ -21,7 +29,6 @@ Revision history for our modified version of EasyFlux&reg; DL for CR3000.
   for soil profile measurements
 
 ### Changed
-
 
 * Data table `Flux`
     * all TDR-related column names are changed from `tdr315` &rarr;`tdr31X`
