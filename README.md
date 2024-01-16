@@ -1,17 +1,6 @@
-# EasyFlux-DL-CR3000
+# EasyFlux-DL-CR3OP
 
-CR3000 datalogger program for Campbell open-path eddy-covariance systems, 
-by @campbell-scientific. This repository is a service of the [Laboratory for
-Atmospheric Research](http://lar.wsu.edu) at Washington State University and
-is not affiliated with the author: Campbell Scientific, Inc. of Logan, UT. 
+Base release of EasyFlux-DL for Campbell Scientific CR3000 dataloggers. 
+Not guaranteed to be up-to-date and not for redistribution. 
 
-### Learn more
-
-* https://www.campbellsci.com/easyflux-dl
-
-
-### License
-
-The program is offered for free with no warranty. Users are free to modify to
-meet their specific needs.
-
+For downloads and documentation, visit the official website: <https://www.campbellsci.com/easyflux-dl>
